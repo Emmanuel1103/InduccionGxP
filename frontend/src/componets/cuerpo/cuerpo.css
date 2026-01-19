@@ -1,0 +1,32 @@
+.contenedor{
+    text-align: center;
+}
+
+.contenedor h1 {
+    margin-top: 60px;
+    font-size: 24px;
+    color:#26bc58;
+}
+.cuerpoplayer {
+  width: 90%;
+  max-width: 800px;
+  border: 2px solid #26bc58;
+  padding: 2px;
+  margin: 40px auto;
+  border-radius: 16px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.player-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; 
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
