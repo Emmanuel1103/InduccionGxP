@@ -1,0 +1,46 @@
+.estado-progreso {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.titulo-estado {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.info-progreso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+
+.etiqueta-progreso {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+.porcentaje-progreso {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.barra-progreso-contenedor {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barra-progreso-relleno {
+  height: 100%;
+  background: linear-gradient(90deg, #00d084 0%, #00b871 100%);
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}

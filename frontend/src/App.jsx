@@ -1,13 +1,17 @@
 import React from 'react'
-import Header from './componets/header/header'
-import Cuerpo from './componets/cuerpo/cuerpo'  
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import PaginaBienvenida from './paginas/PaginaBienvenida'
+import PaginaInduccion from './paginas/PaginaInduccion'
 
 export const App = () => {
   return (
-    <div className='contenedor'>
-      <Header/>
-      <Cuerpo/> 
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Navigate to="/bienvenida" replace />} />
+        <Route path="/bienvenida" element={<PaginaBienvenida />} />
+        <Route path="/induccion" element={<PaginaInduccion />} />
+      </Routes>
+    </Router>
   )
 }
 

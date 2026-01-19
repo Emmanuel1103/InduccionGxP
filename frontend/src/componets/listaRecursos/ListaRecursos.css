@@ -1,0 +1,92 @@
+.lista-recursos {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 40px;
+}
+
+.encabezado-recursos {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.icono-recursos {
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+}
+
+.titulo-recursos {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.items-recursos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.item-recurso {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.8rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.item-recurso:hover {
+  background: #e9ecef;
+}
+
+.info-recurso {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex: 1;
+}
+
+.icono-archivo {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detalles-recurso {
+  flex: 1;
+}
+
+.nombre-recurso {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0 0 0.2rem 0;
+}
+
+.tamano-recurso {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+}
+
+.boton-descargar {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.boton-descargar:hover {
+  background: #dee2e6;
+}

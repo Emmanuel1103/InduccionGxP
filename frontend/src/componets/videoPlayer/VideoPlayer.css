@@ -1,0 +1,28 @@
+.contenedor-video {
+  width: 100%;
+  background: #1a1d29;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.reproductor-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* Aspect ratio 16:9 */
+  background: #000;
+}
+
+.reproductor {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.texto-video {
+  color: #a0a0a0;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  background: #1a1d29;
+  margin: 0;
+}

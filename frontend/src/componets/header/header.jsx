@@ -7,9 +7,9 @@ export const Header = () => {
     <div className='header'>
         <img src={logoFSD} alt="logoFSD" className='logo' />
         <ul>
-            <li>Inicio</li>
-            <li>Acerca de</li>
-            <li>Contacto</li>   
+            <li>Gestión por procesos</li>
+            {/* <li>Acerca de</li>
+            <li>Contacto</li>    */}
         </ul>
     </div>
   )
