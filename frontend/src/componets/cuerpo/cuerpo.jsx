@@ -8,7 +8,7 @@ export default function VideoBox() {
                 <div className="player-wrapper">
                     <ReactPlayer
                         className="react-player"
-                        src="https://www.youtube.com/watch?v=p38WgakuYDo"
+                        src="https://www.youtube.com/watch?v=s3a4OQR-10M"
                         width="100%"
                         height="100%"
                         controls={true}
