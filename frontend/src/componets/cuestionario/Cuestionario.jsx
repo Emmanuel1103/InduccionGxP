@@ -1,44 +1,57 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { useSesionContext } from '../../contexto/SesionContext'
+import { useCuestionario } from '../../hooks/useCuestionario'
+import { preguntasAPI } from '../../servicios/api'
 import './Cuestionario.css'
 
-export const Cuestionario = () => {
+export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos' }) => {
   const [respuestas, setRespuestas] = useState({})
   const [preguntaActual, setPreguntaActual] = useState(0)
   const [mostrarResultados, setMostrarResultados] = useState(false)
   const [respuestaVerificada, setRespuestaVerificada] = useState({})
+  const [preguntas, setPreguntas] = useState([])
+  const [cargandoPreguntas, setCargandoPreguntas] = useState(true)
+  const [errorPreguntas, setErrorPreguntas] = useState(null)
+  const [tiempoInicio] = useState(Date.now())
 
-  const preguntas = [
-    {
-      id: 1,
-      tipo: 'opcion-multiple',
-      pregunta: '¿Qué es la gestión por procesos?',
-      opciones: [
-        { id: 'a', texto: 'Un modelo de gestión centrado en las actividades', correcta: false },
-        { id: 'b', texto: 'Un enfoque que organiza las actividades en procesos interrelacionados', correcta: true },
-        { id: 'c', texto: 'Una herramienta de control financiero', correcta: false },
+  const { sesion } = useSesionContext()
+  const { enviarRespuestas, enviando, resultado, error } = useCuestionario(
+    sesion?.sesion_id,
+    cuestionarioId,
+    'Evaluación - Gestión por Procesos'
+  )
 
-      ]
-    },
-    {
-      id: 2,
-      tipo: 'verdadero-falso',
-      pregunta: 'La gestión por procesos mejora la eficiencia organizacional',
-      respuestaCorrecta: true
-    },
-    {
-      id: 3,
-      tipo: 'opcion-multiple',
-      pregunta: '¿Cuál es un beneficio de la gestión por procesos?',
-      opciones: [
-        { id: 'a', texto: 'Mayor burocracia', correcta: false },
-        { id: 'b', texto: 'Optimización de recursos', correcta: true },
-        { id: 'c', texto: 'Más jerarquías', correcta: false }
-      ]
+  // Cargar preguntas desde la API
+  useEffect(() => {
+    const cargarPreguntas = async () => {
+      try {
+        setCargandoPreguntas(true)
+        const preguntasDB = await preguntasAPI.obtenerPreguntas(cuestionarioId)
+        
+        // Convertir formato de DB a formato del componente
+        const preguntasFormateadas = preguntasDB.map(p => ({
+          id: p.id,
+          tipo: p.tipo,
+          pregunta: p.pregunta,
+          opciones: p.opciones || [],
+          respuestaCorrecta: p.respuesta_correcta,
+          explicacion: p.explicacion || ''
+        }))
+        
+        setPreguntas(preguntasFormateadas)
+        setCargandoPreguntas(false)
+      } catch (err) {
+        console.error('Error al cargar preguntas:', err)
+        setErrorPreguntas(err.message)
+        setCargandoPreguntas(false)
+      }
     }
-  ]
 
-  const pregunta = preguntas[preguntaActual]
+    if (cuestionarioId) {
+      cargarPreguntas()
+    }
+  }, [cuestionarioId])
 
   const manejarRespuesta = (preguntaId, respuesta) => {
     setRespuestas({
@@ -85,10 +98,28 @@ export const Cuestionario = () => {
     }
   }
 
-  const irSiguiente = () => {
+  const irSiguiente = async () => {
     if (preguntaActual < preguntas.length - 1) {
       setPreguntaActual(preguntaActual + 1)
     } else {
+      // Última pregunta - enviar respuestas al backend
+      await manejarEnvioFinal()
+    }
+  }
+
+  const manejarEnvioFinal = async () => {
+    const tiempoEmpleado = Math.floor((Date.now() - tiempoInicio) / 1000)
+    
+    try {
+      const respuesta = await enviarRespuestas(preguntas, respuestas, tiempoEmpleado)
+      
+      if (respuesta) {
+        console.log('Respuestas guardadas:', respuesta)
+        setMostrarResultados(true)
+      }
+    } catch (err) {
+      console.error('Error al enviar respuestas:', err)
+      // Aún así mostrar resultados localmente
       setMostrarResultados(true)
     }
   }
@@ -116,14 +147,63 @@ export const Cuestionario = () => {
     setRespuestaVerificada({})
   }
 
+  // Mostrar loading mientras cargan las preguntas
+  if (cargandoPreguntas) {
+    return (
+      <div className='cuestionario'>
+        <div className='encabezado-cuestionario'>
+          <FaQuestionCircle className='icono-cuestionario' color='#26bc58' />
+          <h3 className='titulo-cuestionario'>Evaluación</h3>
+        </div>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>Cargando preguntas...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Mostrar error si no se pueden cargar las preguntas
+  if (errorPreguntas) {
+    return (
+      <div className='cuestionario'>
+        <div className='encabezado-cuestionario'>
+          <FaTimesCircle className='icono-cuestionario' color='#e74c3c' />
+          <h3 className='titulo-cuestionario'>Error</h3>
+        </div>
+        <div style={{ padding: '2rem', textAlign: 'center', color: '#e74c3c' }}>
+          <p>No se pudieron cargar las preguntas</p>
+          <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>{errorPreguntas}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Si no hay preguntas
+  if (preguntas.length === 0) {
+    return (
+      <div className='cuestionario'>
+        <div className='encabezado-cuestionario'>
+          <FaQuestionCircle className='icono-cuestionario' color='#26bc58' />
+          <h3 className='titulo-cuestionario'>Evaluación</h3>
+        </div>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>
+          <p>No hay preguntas disponibles para este cuestionario</p>
+        </div>
+      </div>
+    )
+  }
+
+  const pregunta = preguntas[preguntaActual]
+
   if (mostrarResultados) {
     const puntuacion = calcularPuntuacion()
     const porcentaje = (puntuacion.correctas / puntuacion.total) * 100
+    const aprobado = porcentaje >= 70
 
     return (
       <div className='cuestionario'>
         <div className='encabezado-cuestionario'>
-          <FaCheckCircle className='icono-cuestionario' color='#26bc58' />
+          <FaCheckCircle className='icono-cuestionario' color={aprobado ? '#26bc58' : '#e74c3c'} />
           <h3 className='titulo-cuestionario'>Resultados</h3>
         </div>
 
@@ -134,14 +214,26 @@ export const Cuestionario = () => {
           <p className='texto-resultado-porcentaje'>
             {porcentaje.toFixed(0)}% Correcto
           </p>
+          <p style={{ marginTop: '1rem', fontSize: '1.1rem', fontWeight: 'bold', color: aprobado ? '#26bc58' : '#e74c3c' }}>
+            {aprobado ? '¡Aprobado!' : 'No Aprobado'}
+          </p>
           <div className='barra-resultado'>
             <div
               className='barra-resultado-relleno'
-              style={{ width: `${porcentaje}%` }}
+              style={{ 
+                width: `${porcentaje}%`,
+                backgroundColor: aprobado ? '#26bc58' : '#e74c3c'
+              }}
             ></div>
           </div>
-          <button className='boton-reiniciar' onClick={reiniciar}>
-            Intentar de Nuevo
+          {error && (
+            <p style={{ color: '#e74c3c', fontSize: '0.9rem', marginTop: '1rem' }}>
+              Error al guardar: {error}
+            </p>
+          )}
+
+          <button className='boton-reiniciar' onClick={reiniciar} disabled={enviando}>
+            {enviando ? 'Guardando...' : 'Intentar de Nuevo'}
           </button>
         </div>
       </div>

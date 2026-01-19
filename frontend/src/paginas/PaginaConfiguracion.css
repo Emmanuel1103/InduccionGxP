@@ -1,0 +1,50 @@
+.pagina-configuracion {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.contenedor-config {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.navegacion-config {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.enlace-volver, .enlace-datos {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: white;
+  color: #666;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.enlace-volver:hover {
+  background-color: #f9f9f9;
+  border-color: #26bc58;
+  color: #26bc58;
+}
+
+.enlace-datos {
+  background-color: #3498db;
+  color: white;
+  border-color: #3498db;
+}
+
+.enlace-datos:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}

@@ -42,3 +42,17 @@ ul li:hover {
     color: #1f9a47;
 }
 
+.enlace-config {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: inherit;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.enlace-config:hover {
+    background-color: #f0f0f0;
+}

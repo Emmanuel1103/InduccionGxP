@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSesionContext } from '../contexto/SesionContext'
 import Header from '../componets/header/header'
 import VideoPlayer from '../componets/videoPlayer/VideoPlayer'
 import EstadoProgreso from '../componets/estadoProgreso/EstadoProgreso'
@@ -8,6 +9,19 @@ import InfoSesion from '../componets/infoSesion/InfoSesion'
 import './PaginaInduccion.css'
 
 export const PaginaInduccion = () => {
+  const { sesion, cargando } = useSesionContext()
+
+  if (cargando) {
+    return (
+      <div className='pagina-induccion'>
+        <Header />
+        <div className='cuerpo' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+          <p>Cargando sesión...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='pagina-induccion'>
       <Header />
@@ -22,9 +36,8 @@ export const PaginaInduccion = () => {
             />
           </div>
           <div className='columna-derecha'>
-            <Cuestionario />
-            <EstadoProgreso porcentaje={0} />
-            
+            <Cuestionario cuestionarioId="cuestionario_gestion_procesos" />
+            <EstadoProgreso porcentaje={sesion?.porcentaje_completado || 0} />
             <ListaRecursos />
           </div>
         </div>
