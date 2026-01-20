@@ -1,5 +1,5 @@
-import React from 'react'
-import { useSesionContext } from '../contexto/SesionContext'
+import React, { useState, useEffect } from 'react'
+import { FaUser, FaTimes } from 'react-icons/fa'
 import Header from '../componets/header/header'
 import VideoPlayer from '../componets/videoPlayer/VideoPlayer'
 import EstadoProgreso from '../componets/estadoProgreso/EstadoProgreso'
@@ -9,19 +9,32 @@ import InfoSesion from '../componets/infoSesion/InfoSesion'
 import './PaginaInduccion.css'
 
 export const PaginaInduccion = () => {
-  const { sesion, cargando } = useSesionContext()
+  const [mostrarModalNombre, setMostrarModalNombre] = useState(false)
+  const [nombre, setNombre] = useState('')
+  const [nombreTemporal, setNombreTemporal] = useState('')
 
-  if (cargando) {
-    return (
-      <div className='pagina-induccion'>
-        <Header />
-        <div className='cuerpo' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <p>Cargando sesión...</p>
-        </div>
-      </div>
-    )
+  useEffect(() => {
+    // Verificar si ya hay un nombre guardado
+    const nombreGuardado = sessionStorage.getItem('nombreUsuario')
+    if (!nombreGuardado) {
+      setMostrarModalNombre(true)
+    } else {
+      setNombre(nombreGuardado)
+    }
+  }, [])
+
+  const guardarNombre = () => {
+    if (nombreTemporal.trim()) {
+      setNombre(nombreTemporal.trim())
+      sessionStorage.setItem('nombreUsuario', nombreTemporal.trim())
+      setMostrarModalNombre(false)
+    }
   }
 
+  const cambiarNombre = () => {
+    setNombreTemporal(nombre)
+    setMostrarModalNombre(true)
+  }
   return (
     <div className='pagina-induccion'>
       <Header />
@@ -33,13 +46,76 @@ export const PaginaInduccion = () => {
             <InfoSesion 
               titulo="Inducción gestión por procesos"
               descripcion="En esta sesión cubriremos los pilares fundamentales de nuestra organización. Comenzaremos con la bienvenida institucional y exploraremos cómo trabajamos bajo un modelo de gestión por procesos."
+              nombre={nombre}
+              onCambiarNombre={cambiarNombre}
             />
           </div>
           <div className='columna-derecha'>
-            <Cuestionario cuestionarioId="cuestionario_gestion_procesos" />
-            <EstadoProgreso porcentaje={sesion?.porcentaje_completado || 0} />
+            <Cuestionario cuestionarioId="cuestionario_gestion_procesos" nombre={nombre} />
+            <EstadoProgreso porcentaje={0} />
             <ListaRecursos />
           </div>
+        </div>
+      </div>
+
+      {/* Modal para capturar nombre */}
+      {mostrarModalNombre && (
+        <ModalNombre
+          nombre={nombreTemporal}
+          onChange={setNombreTemporal}
+          onGuardar={guardarNombre}
+          esEdicion={Boolean(nombre)}
+        />
+      )}
+    </div>
+  )
+}
+
+const ModalNombre = ({ nombre, onChange, onGuardar, esEdicion }) => {
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    onGuardar()
+  }
+
+  return (
+    <div className="modal-overlay modal-nombre">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3>
+            <FaUser />
+            {esEdicion ? 'Cambiar Nombre' : 'Bienvenido a la Inducción'}
+          </h3>
+        </div>
+
+        <div className="modal-body">
+          {!esEdicion && (
+            <p>Para comenzar con la inducción, por favor ingresa tu nombre:</p>
+          )}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="campo-nombre">
+              <label htmlFor="nombre">Nombre completo:</label>
+              <input
+                id="nombre"
+                type="text"
+                value={nombre}
+                onChange={(e) => onChange(e.target.value)}
+                placeholder="Ingresa tu nombre completo"
+                autoFocus
+                required
+              />
+            </div>
+
+            <div className="botones-modal">
+              <button 
+                type="submit" 
+                className="btn-guardar"
+                disabled={!nombre.trim()}
+              >
+                {esEdicion ? 'Actualizar' : 'Continuar'}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

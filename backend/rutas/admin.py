@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from servicios.cosmos_db import servicio_cosmos
 from flask import current_app
 
@@ -8,15 +8,7 @@ bp_admin = Blueprint('admin', __name__)
 def listar_todas_sesiones():
     """Lista todas las sesiones creadas"""
     try:
-        contenedor_sesiones = current_app.config['COSMOS_CONTAINER_SESIONES']
-        consulta = "SELECT * FROM c ORDER BY c.fecha_inicio DESC"
-        
-        sesiones = servicio_cosmos.consultar_documentos(contenedor_sesiones, consulta)
-        
-        return jsonify({
-            'total': len(sesiones),
-            'sesiones': sesiones
-        }), 200
+        return jsonify({'error': 'Contenedor de sesiones eliminado'}), 410
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -68,13 +60,8 @@ def listar_todas_preguntas():
 def obtener_estadisticas_generales():
     """Obtiene estadísticas generales del sistema"""
     try:
-        contenedor_sesiones = current_app.config['COSMOS_CONTAINER_SESIONES']
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
         contenedor_preguntas = current_app.config['COSMOS_CONTAINER_PREGUNTAS']
-        
-        # Contar sesiones
-        sesiones = servicio_cosmos.consultar_documentos(contenedor_sesiones, "SELECT * FROM c")
-        total_sesiones = len(sesiones)
         
         # Contar respuestas
         respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, "SELECT * FROM c")
@@ -98,10 +85,6 @@ def obtener_estadisticas_generales():
         aprobados = sum(1 for r in respuestas if r.get('calificacion', 0) >= 70)
         
         return jsonify({
-            'sesiones': {
-                'total': total_sesiones,
-                'sesiones_con_respuestas': total_respuestas
-            },
             'respuestas': {
                 'total': total_respuestas,
                 'aprobados': aprobados,
@@ -120,27 +103,7 @@ def obtener_estadisticas_generales():
 def vaciar_sesiones():
     """Elimina todas las sesiones del contenedor"""
     try:
-        contenedor_sesiones = current_app.config['COSMOS_CONTAINER_SESIONES']
-        consulta = "SELECT * FROM c"
-        
-        sesiones = servicio_cosmos.consultar_documentos(contenedor_sesiones, consulta)
-        eliminados = 0
-        
-        for sesion in sesiones:
-            try:
-                servicio_cosmos.eliminar_documento(
-                    contenedor_sesiones, 
-                    sesion['id'], 
-                    sesion['sesion_id']
-                )
-                eliminados += 1
-            except Exception as e:
-                print(f"Error eliminando sesión {sesion['id']}: {str(e)}")
-        
-        return jsonify({
-            'mensaje': f'{eliminados} sesiones eliminadas exitosamente',
-            'total_eliminados': eliminados
-        }), 200
+        return jsonify({'error': 'Contenedor de sesiones eliminado'}), 410
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -170,6 +133,39 @@ def vaciar_respuestas():
             'mensaje': f'{eliminados} respuestas eliminadas exitosamente',
             'total_eliminados': eliminados
         }), 200
+            
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@bp_admin.route('/respuestas/<respuesta_id>', methods=['DELETE'])
+def eliminar_respuesta_individual(respuesta_id):
+    """Elimina una respuesta específica por ID"""
+    try:
+        contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
+        
+        # Buscar la respuesta primero para obtener el partition key
+        consulta = "SELECT * FROM c WHERE c.id = @respuesta_id"
+        parametros = [{"name": "@respuesta_id", "value": respuesta_id}]
+        
+        respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta, parametros)
+        
+        if not respuestas:
+            return jsonify({'error': 'Respuesta no encontrada'}), 404
+        
+        respuesta = respuestas[0]
+        partition_key = respuesta.get('sesion_id') or respuesta.get('nombre', respuesta_id)
+        
+        # Eliminar el documento
+        resultado = servicio_cosmos.eliminar_documento(
+            contenedor_respuestas, 
+            respuesta_id, 
+            partition_key
+        )
+        
+        if resultado:
+            return jsonify({'mensaje': 'Respuesta eliminada exitosamente'}), 200
+        else:
+            return jsonify({'error': 'No se pudo eliminar la respuesta'}), 500
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500

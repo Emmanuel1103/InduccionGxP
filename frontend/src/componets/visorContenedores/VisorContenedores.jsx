@@ -6,15 +6,12 @@ import './VisorContenedores.css'
 export const VisorContenedores = () => {
   const [vistaActiva, setVistaActiva] = useState('estadisticas')
   const { 
-    sesiones, 
     respuestas, 
     preguntas, 
     estadisticas, 
     cargando, 
-    error, 
+    error,
     cargarTodo,
-    vaciarSesiones,
-    vaciarRespuestas
   } = useAdminDatos()
 
   useEffect(() => {
@@ -79,12 +76,7 @@ export const VisorContenedores = () => {
         >
           <FaChartBar /> Estadísticas
         </button>
-        <button 
-          className={`pestana ${vistaActiva === 'sesiones' ? 'activa' : ''}`}
-          onClick={() => setVistaActiva('sesiones')}
-        >
-          <FaUsers /> Sesiones ({sesiones.length})
-        </button>
+
         <button 
           className={`pestana ${vistaActiva === 'respuestas' ? 'activa' : ''}`}
           onClick={() => setVistaActiva('respuestas')}
@@ -104,14 +96,7 @@ export const VisorContenedores = () => {
         {vistaActiva === 'estadisticas' && (
           <VistaEstadisticas estadisticas={estadisticas} cargando={cargando} />
         )}
-        {vistaActiva === 'sesiones' && (
-          <VistaSesiones 
-            sesiones={sesiones} 
-            formatearFecha={formatearFecha}
-            onVaciar={manejarVaciarSesiones}
-            cargando={cargando}
-          />
-        )}
+
         {vistaActiva === 'respuestas' && (
           <VistaRespuestas 
             respuestas={respuestas} 
@@ -313,7 +298,7 @@ const VistaPreguntas = ({ preguntas, formatearFecha }) => {
                 <div className='encabezado-pregunta-admin'>
                   <span className='orden-badge'>#{pregunta.orden}</span>
                   <span className={`tipo-badge ${pregunta.tipo}`}>
-                    {pregunta.tipo === 'opcion-multiple' ? 'Opción Múltiple' : 'V/F'}
+                    {pregunta.tipo === 'opcion-multiple' ? 'Opción múltiple' : 'V/F'}
                   </span>
                   {!pregunta.activo && <span className='estado-badge'>Inactiva</span>}
                 </div>

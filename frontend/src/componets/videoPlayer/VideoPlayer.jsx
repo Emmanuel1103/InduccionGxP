@@ -13,7 +13,8 @@ export const VideoPlayer = ({ url }) => {
           width='100%'
           height='100%'
           className='reproductor'
-          playing={true}
+          playing={false}
+          muted={true}
           config={{
             youtube: {
               playerVars: { 

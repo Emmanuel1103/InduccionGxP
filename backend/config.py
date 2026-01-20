@@ -11,7 +11,6 @@ class Config:
     COSMOS_ENDPOINT = os.getenv('COSMOS_ENDPOINT')
     COSMOS_KEY = os.getenv('COSMOS_KEY')
     COSMOS_DATABASE = os.getenv('COSMOS_DATABASE', 'induccion_gxp')
-    COSMOS_CONTAINER_SESIONES = os.getenv('COSMOS_CONTAINER_SESIONES', 'sesiones')
     COSMOS_CONTAINER_RESPUESTAS = os.getenv('COSMOS_CONTAINER_RESPUESTAS', 'respuestas')
     COSMOS_CONTAINER_PREGUNTAS = os.getenv('COSMOS_CONTAINER_PREGUNTAS', 'preguntas')
     

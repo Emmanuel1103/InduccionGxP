@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
-import { useSesionContext } from '../../contexto/SesionContext'
 import { useCuestionario } from '../../hooks/useCuestionario'
 import { preguntasAPI } from '../../servicios/api'
 import './Cuestionario.css'
 
-export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos' }) => {
+export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos', nombre }) => {
   const [respuestas, setRespuestas] = useState({})
   const [preguntaActual, setPreguntaActual] = useState(0)
   const [mostrarResultados, setMostrarResultados] = useState(false)
@@ -15,9 +14,8 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos' 
   const [errorPreguntas, setErrorPreguntas] = useState(null)
   const [tiempoInicio] = useState(Date.now())
 
-  const { sesion } = useSesionContext()
   const { enviarRespuestas, enviando, resultado, error } = useCuestionario(
-    sesion?.sesion_id,
+    nombre || 'Sin nombre',
     cuestionarioId,
     'Evaluación - Gestión por Procesos'
   )

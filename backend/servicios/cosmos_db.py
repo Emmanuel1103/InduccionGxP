@@ -33,7 +33,6 @@ class ServicioCosmosDB:
     def _crear_contenedores(self):
         """Crea los contenedores necesarios si no existen"""
         contenedores_config = [
-            (current_app.config['COSMOS_CONTAINER_SESIONES'], '/sesion_id'),
             (current_app.config['COSMOS_CONTAINER_RESPUESTAS'], '/sesion_id'),
             (current_app.config['COSMOS_CONTAINER_PREGUNTAS'], '/cuestionario_id')
         ]

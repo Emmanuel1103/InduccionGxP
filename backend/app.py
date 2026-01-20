@@ -40,13 +40,11 @@ def crear_app(nombre_config='default'):
             print('⚠ Azure Storage no configurado - Endpoints de recursos deshabilitados')
     
     # Registrar blueprints
-    from rutas.sesiones import bp_sesiones
     from rutas.recursos import bp_recursos
     from rutas.cuestionarios import bp_cuestionarios
     from rutas.preguntas import bp_preguntas
     from rutas.admin import bp_admin
     
-    app.register_blueprint(bp_sesiones, url_prefix='/api/sesiones')
     app.register_blueprint(bp_recursos, url_prefix='/api/recursos')
     app.register_blueprint(bp_cuestionarios, url_prefix='/api/cuestionarios')
     app.register_blueprint(bp_preguntas, url_prefix='/api/preguntas')

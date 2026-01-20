@@ -10,54 +10,7 @@ const manejarRespuesta = async (response) => {
   return response.json()
 }
 
-// Servicio de Sesiones
-export const sesionesAPI = {
-  // Crear una nueva sesión de inducción
-  crear: async (metadata = {}) => {
-    const response = await fetch(`${API_BASE_URL}/sesiones/`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ metadata })
-    })
-    return manejarRespuesta(response)
-  },
 
-  // Obtener datos de una sesión
-  obtener: async (sesionId) => {
-    const response = await fetch(`${API_BASE_URL}/sesiones/${sesionId}`)
-    return manejarRespuesta(response)
-  },
-
-  // Marcar video como visto
-  marcarVideoVisto: async (sesionId, videoId) => {
-    const response = await fetch(`${API_BASE_URL}/sesiones/${sesionId}/video`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ video_id: videoId })
-    })
-    return manejarRespuesta(response)
-  },
-
-  // Completar módulo
-  completarModulo: async (sesionId, moduloId) => {
-    const response = await fetch(`${API_BASE_URL}/sesiones/${sesionId}/modulo`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ modulo_id: moduloId })
-    })
-    return manejarRespuesta(response)
-  },
-
-  // Actualizar sesión
-  actualizar: async (sesionId, datos) => {
-    const response = await fetch(`${API_BASE_URL}/sesiones/${sesionId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(datos)
-    })
-    return manejarRespuesta(response)
-  }
-}
 
 // Servicio de Cuestionarios
 export const cuestionariosAPI = {
@@ -180,11 +133,7 @@ export const preguntasAPI = {
 
 // Servicio de Administración
 export const adminAPI = {
-  // Obtener todas las sesiones
-  obtenerTodasSesiones: async () => {
-    const response = await fetch(`${API_BASE_URL}/admin/sesiones/todas`)
-    return manejarRespuesta(response)
-  },
+
 
   // Obtener todas las respuestas
   obtenerTodasRespuestas: async () => {
@@ -204,17 +153,19 @@ export const adminAPI = {
     return manejarRespuesta(response)
   },
 
-  // Vaciar contenedor de sesiones
-  vaciarSesiones: async () => {
-    const response = await fetch(`${API_BASE_URL}/admin/sesiones/vaciar`, {
+
+
+  // Vaciar contenedor de respuestas
+  vaciarRespuestas: async () => {
+    const response = await fetch(`${API_BASE_URL}/admin/respuestas/vaciar`, {
       method: 'DELETE'
     })
     return manejarRespuesta(response)
   },
 
-  // Vaciar contenedor de respuestas
-  vaciarRespuestas: async () => {
-    const response = await fetch(`${API_BASE_URL}/admin/respuestas/vaciar`, {
+  // Eliminar respuesta individual
+  eliminarRespuesta: async (respuestaId) => {
+    const response = await fetch(`${API_BASE_URL}/admin/respuestas/${respuestaId}`, {
       method: 'DELETE'
     })
     return manejarRespuesta(response)

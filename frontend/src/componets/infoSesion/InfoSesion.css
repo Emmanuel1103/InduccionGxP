@@ -5,6 +5,50 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Información del usuario */
+.info-usuario {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.usuario-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.usuario-icono {
+  color: #26bc58;
+  font-size: 1.1rem;
+}
+
+.usuario-nombre {
+  font-weight: 600;
+  color: #495057;
+  font-size: 1rem;
+}
+
+.btn-cambiar-nombre {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-cambiar-nombre:hover {
+  background: #26bc58;
+  color: white;
+  transform: scale(1.1);
+}
+
 .titulo-sesion {
   font-size: 1.3rem;
   font-weight: 600;

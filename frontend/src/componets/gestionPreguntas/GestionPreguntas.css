@@ -131,8 +131,8 @@
 }
 
 .tarjeta-pregunta.nueva {
-  border-color: #3498db;
-  background-color: #f0f8ff;
+  border-color: #26bc58;
+  background-color: #e8f5e9;
 }
 
 .cabecera-pregunta {
@@ -166,7 +166,7 @@
   width: 32px;
   height: 32px;
   background-color: #f5f5f5;
-  border: 1px solid #ddd;
+  border: 0.1px solid #ddd;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -174,9 +174,9 @@
 }
 
 .boton-orden:hover:not(:disabled) {
-  background-color: #3498db;
-  color: white;
-  border-color: #3498db;
+  background-color: #e8f5e9;
+  color: #26bc58;
+  border-color: #e8f5e9;
   transform: scale(1.1);
 }
 
@@ -203,7 +203,7 @@
 }
 
 .boton-editar {
-  background-color: #3498db;
+  background-color: #26bc58;
   color: white;
 }
 
@@ -233,8 +233,8 @@
 
 .tipo-pregunta {
   display: inline-block;
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: #e8f5e9;
+  color: #26bc58;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.85rem;

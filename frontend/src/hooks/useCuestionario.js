@@ -4,7 +4,7 @@ import { cuestionariosAPI } from '../servicios/api'
 /**
  * Hook personalizado para manejar cuestionarios
  */
-export const useCuestionario = (sesionId, cuestionarioId, cuestionarioTitulo) => {
+export const useCuestionario = (nombre, cuestionarioId, cuestionarioTitulo) => {
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState(null)
   const [resultado, setResultado] = useState(null)
@@ -56,8 +56,8 @@ export const useCuestionario = (sesionId, cuestionarioId, cuestionarioTitulo) =>
    * @param {Number} tiempoEmpleado - Tiempo en segundos
    */
   const enviarRespuestas = async (preguntas, respuestasUsuario, tiempoEmpleado = null) => {
-    if (!sesionId) {
-      setError('No hay sesión activa')
+    if (!nombre) {
+      setError('No hay nombre de usuario')
       return null
     }
 
@@ -68,7 +68,8 @@ export const useCuestionario = (sesionId, cuestionarioId, cuestionarioTitulo) =>
       const respuestasFormateadas = formatearRespuestas(preguntas, respuestasUsuario)
       
       const datos = {
-        sesion_id: sesionId,
+        sesion_id: nombre, // Usar nombre como sesion_id para compatibilidad
+        nombre: nombre,
         cuestionario_id: cuestionarioId,
         cuestionario_titulo: cuestionarioTitulo,
         respuestas: respuestasFormateadas,

@@ -138,15 +138,10 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
   return (
     <div className='gestion-preguntas'>
       <div className='encabezado-gestion'>
-        <h2>Gestión de Preguntas</h2>
+        <h2>Gestión de preguntas</h2>
         <div className='botones-encabezado'>
-          {preguntas.length === 0 && (
-            <button className='boton-inicializar' onClick={manejarInicializarDatos} disabled={cargando}>
-              <FaDownload /> Cargar Datos de Ejemplo
-            </button>
-          )}
           <button className='boton-crear' onClick={iniciarCreacion} disabled={modoEdicion !== null}>
-            <FaPlus /> Nueva Pregunta
+            <FaPlus /> Nueva pregunta
           </button>
         </div>
       </div>
@@ -191,7 +186,7 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
         {/* Formulario de creación */}
         {modoEdicion === 'crear' && (
           <div className='tarjeta-pregunta editando nueva'>
-            <h3>Nueva Pregunta</h3>
+            <h3>Nueva pregunta</h3>
             <FormularioPregunta
               pregunta={preguntaActual}
               onChange={manejarCambio}
@@ -209,7 +204,7 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
       {preguntas.length === 0 && !modoEdicion && !cargando && (
         <div className='mensaje-vacio'>
           <p>No hay preguntas configuradas</p>
-          <p>Haz clic en "Cargar Datos de Ejemplo" o "Nueva Pregunta" para comenzar</p>
+          <p>Haz clic en "Cargar Datos de Ejemplo" o "Nueva pregunta" para comenzar</p>
         </div>
       )}
     </div>
@@ -252,7 +247,7 @@ const VistaPregunta = ({ pregunta, index, totalPreguntas, onEditar, onEliminar, 
       </div>
       <p className='texto-pregunta'>{pregunta.pregunta}</p>
       <span className='tipo-pregunta'>
-        Tipo: {pregunta.tipo === 'opcion-multiple' ? 'Opción Múltiple' : 'Verdadero/Falso'}
+        Tipo: {pregunta.tipo === 'opcion-multiple' ? 'Opción múltiple' : 'Verdadero/Falso'}
       </span>
       {pregunta.tipo === 'opcion-multiple' && (
         <div className='opciones-vista'>
@@ -303,7 +298,7 @@ const FormularioPregunta = ({
       <div className='campo'>
         <label>Tipo de Pregunta</label>
         <select value={pregunta.tipo} onChange={(e) => onChange('tipo', e.target.value)}>
-          <option value='opcion-multiple'>Opción Múltiple</option>
+          <option value='opcion-multiple'>Opción múltiple</option>
           <option value='verdadero-falso'>Verdadero/Falso</option>
         </select>
       </div>

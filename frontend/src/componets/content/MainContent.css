@@ -1,0 +1,26 @@
+.main-content {
+  margin-left: 60px;
+  min-height: calc(100vh - 70px);
+  background: #f8f9fa;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.with-sidebar {
+  margin-left: 250px;
+}
+
+.content-container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .main-content.with-sidebar {
+    margin-left: 0;
+  }
+  
+  .content-container {
+    padding: 1rem;
+  }
+}

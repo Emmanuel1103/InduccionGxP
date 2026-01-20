@@ -2,9 +2,13 @@ from flask import Blueprint, request, jsonify
 from servicios.cosmos_db import servicio_cosmos
 from flask import current_app
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 bp_preguntas = Blueprint('preguntas', __name__)
+
+def obtener_fecha_colombia():
+    """Retorna la fecha y hora actual en zona horaria de Colombia (UTC-5)"""
+    return datetime.now(timezone(timedelta(hours=-5))).isoformat()
 
 @bp_preguntas.route('/cuestionario/<cuestionario_id>', methods=['GET'])
 def obtener_preguntas_cuestionario(cuestionario_id):
@@ -81,8 +85,8 @@ def crear_pregunta():
             'respuesta_correcta': datos.get('respuesta_correcta'),
             'explicacion': datos.get('explicacion', ''),
             'activo': datos.get('activo', True),
-            'fecha_creacion': datetime.utcnow().isoformat(),
-            'fecha_modificacion': datetime.utcnow().isoformat()
+            'fecha_creacion': obtener_fecha_colombia(),
+            'fecha_modificacion': obtener_fecha_colombia()
         }
         
         contenedor_preguntas = current_app.config['COSMOS_CONTAINER_PREGUNTAS']
@@ -119,7 +123,7 @@ def actualizar_pregunta(pregunta_id):
             if campo in datos:
                 pregunta[campo] = datos[campo]
         
-        pregunta['fecha_modificacion'] = datetime.utcnow().isoformat()
+        pregunta['fecha_modificacion'] = obtener_fecha_colombia()
         
         resultado = servicio_cosmos.actualizar_documento(contenedor_preguntas, pregunta)
         
@@ -149,7 +153,7 @@ def eliminar_pregunta(pregunta_id):
         
         # Marcar como inactiva en lugar de eliminar
         pregunta['activo'] = False
-        pregunta['fecha_modificacion'] = datetime.utcnow().isoformat()
+        pregunta['fecha_modificacion'] = obtener_fecha_colombia()
         
         resultado = servicio_cosmos.actualizar_documento(contenedor_preguntas, pregunta)
         
@@ -200,8 +204,8 @@ def inicializar_datos_ejemplo():
                 ],
                 'explicacion': 'La gestión por procesos organiza las actividades en procesos interrelacionados para mejorar la eficiencia.',
                 'activo': True,
-                'fecha_creacion': datetime.utcnow().isoformat(),
-                'fecha_modificacion': datetime.utcnow().isoformat()
+                'fecha_creacion': obtener_fecha_colombia(),
+                'fecha_modificacion': obtener_fecha_colombia()
             },
             {
                 'id': str(uuid.uuid4()),
@@ -213,8 +217,8 @@ def inicializar_datos_ejemplo():
                 'respuesta_correcta': True,
                 'explicacion': 'La gestión por procesos efectivamente mejora la eficiencia al optimizar flujos de trabajo.',
                 'activo': True,
-                'fecha_creacion': datetime.utcnow().isoformat(),
-                'fecha_modificacion': datetime.utcnow().isoformat()
+                'fecha_creacion': obtener_fecha_colombia(),
+                'fecha_modificacion': obtener_fecha_colombia()
             },
             {
                 'id': str(uuid.uuid4()),
@@ -230,8 +234,8 @@ def inicializar_datos_ejemplo():
                 ],
                 'explicacion': 'Uno de los principales beneficios es la optimización de recursos y reducción de desperdicios.',
                 'activo': True,
-                'fecha_creacion': datetime.utcnow().isoformat(),
-                'fecha_modificacion': datetime.utcnow().isoformat()
+                'fecha_creacion': obtener_fecha_colombia(),
+                'fecha_modificacion': obtener_fecha_colombia()
             }
         ]
         

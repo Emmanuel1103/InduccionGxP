@@ -2,9 +2,13 @@ from flask import Blueprint, request, jsonify
 from servicios.cosmos_db import servicio_cosmos
 from flask import current_app
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 bp_cuestionarios = Blueprint('cuestionarios', __name__)
+
+def obtener_fecha_colombia():
+    """Retorna la fecha y hora actual en zona horaria de Colombia (UTC-5)"""
+    return datetime.now(timezone(timedelta(hours=-5))).isoformat()
 
 @bp_cuestionarios.route('/respuesta', methods=['POST'])
 def guardar_respuesta():
@@ -25,11 +29,18 @@ def guardar_respuesta():
     try:
         datos = request.get_json()
         
-        # Validar datos requeridos
-        campos_requeridos = ['sesion_id', 'cuestionario_id', 'respuestas']
-        for campo in campos_requeridos:
-            if campo not in datos:
-                return jsonify({'error': f'Campo requerido: {campo}'}), 400
+        # Validar datos requeridos - ahora sesion_id es opcional si hay nombre
+        if 'nombre' not in datos and 'sesion_id' not in datos:
+            return jsonify({'error': 'Se requiere campo nombre o sesion_id'}), 400
+            
+        if 'cuestionario_id' not in datos:
+            return jsonify({'error': 'Campo requerido: cuestionario_id'}), 400
+            
+        if 'respuestas' not in datos:
+            return jsonify({'error': 'Campo requerido: respuestas'}), 400
+        
+        # Determinar el identificador de sesión (priorizar nombre sobre sesion_id)
+        sesion_id = datos.get('nombre') or datos.get('sesion_id')
         
         # Validar estructura de respuestas
         if not isinstance(datos['respuestas'], list) or len(datos['respuestas']) == 0:
@@ -50,7 +61,8 @@ def guardar_respuesta():
         # Crear documento de respuesta
         respuesta = {
             'id': str(uuid.uuid4()),
-            'sesion_id': datos['sesion_id'],
+            'sesion_id': sesion_id,  # Usar el identificador determinado
+            'nombre': datos.get('nombre', sesion_id),  # Agregar campo nombre específico
             'cuestionario_id': datos['cuestionario_id'],
             'cuestionario_titulo': datos.get('cuestionario_titulo', 'Sin título'),
             'respuestas': datos['respuestas'],  # Array con estructura detallada de cada pregunta
@@ -61,27 +73,14 @@ def guardar_respuesta():
             'porcentaje_acierto': calificacion_calculada,
             'aprobado': datos.get('aprobado', calificacion_calculada >= 70),  # 70% como mínimo aprobatorio
             'tiempo_empleado': datos.get('tiempo_empleado'),  # en segundos
-            'fecha_completado': datetime.utcnow().isoformat()
+            'fecha_completado': obtener_fecha_colombia()
         }
         
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
         resultado = servicio_cosmos.crear_documento(contenedor_respuestas, respuesta)
         
         if resultado:
-            # Actualizar sesión
-            contenedor_sesiones = current_app.config['COSMOS_CONTAINER_SESIONES']
-            sesion = servicio_cosmos.leer_documento(contenedor_sesiones, datos['sesion_id'], datos['sesion_id'])
-            
-            if sesion:
-                if datos['cuestionario_id'] not in sesion['cuestionarios_completados']:
-                    sesion['cuestionarios_completados'].append(datos['cuestionario_id'])
-                    sesion['ultima_actividad'] = datetime.utcnow().isoformat()
-                    
-                    # Incrementar intentos si es el mismo cuestionario
-                    sesion['intentos'] = sesion.get('intentos', 1) + 1
-                    
-                    servicio_cosmos.actualizar_documento(contenedor_sesiones, sesion)
-            
+            # No existe contenedor de sesiones: solo guardamos la respuesta en 'respuestas'.
             return jsonify(resultado), 201
         else:
             return jsonify({'error': 'Error al guardar respuesta'}), 500
