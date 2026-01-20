@@ -153,7 +153,12 @@ def eliminar_respuesta_individual(respuesta_id):
             return jsonify({'error': 'Respuesta no encontrada'}), 404
         
         respuesta = respuestas[0]
-        partition_key = respuesta.get('sesion_id') or respuesta.get('nombre', respuesta_id)
+        # Usar cuestionario_id como partition key (estructura nueva)
+        partition_key = respuesta.get('cuestionario_id')
+        
+        if not partition_key:
+            # Fallback para respuestas antiguas
+            partition_key = respuesta.get('sesion_id') or respuesta.get('nombre', respuesta_id)
         
         # Eliminar el documento
         resultado = servicio_cosmos.eliminar_documento(
