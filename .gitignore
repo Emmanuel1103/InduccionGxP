@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 
 *.mp4
+# Ignorar el archivo de entorno del backend (contiene secretos)
+/backend/.env
