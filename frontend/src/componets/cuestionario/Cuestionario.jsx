@@ -212,9 +212,6 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
           <p className='texto-resultado-porcentaje'>
             {porcentaje.toFixed(0)}% Correcto
           </p>
-          <p style={{ marginTop: '1rem', fontSize: '1.1rem', fontWeight: 'bold', color: aprobado ? '#26bc58' : '#e74c3c' }}>
-            {aprobado ? '¡Aprobado!' : 'No Aprobado'}
-          </p>
           <div className='barra-resultado'>
             <div
               className='barra-resultado-relleno'

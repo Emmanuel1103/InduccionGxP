@@ -13,6 +13,112 @@
     z-index: 100;
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-hamburguesa-mobile {
+    display: none;
+    background: linear-gradient(135deg, #26bc58, #20a44b);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.7rem;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(38, 188, 88, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-hamburguesa-mobile.btn-sidebar-toggle {
+    /* Botón específico para el sidebar */
+}
+
+.btn-menu-movil {
+    display: none;
+    background: linear-gradient(135deg, #26bc58, #20a44b);
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.7rem;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(38, 188, 88, 0.3);
+    transition: all 0.2s ease;
+}
+
+.btn-menu-movil:hover,
+.btn-hamburguesa-mobile:hover {
+    background: linear-gradient(135deg, #20a44b, #1e7e34);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(38, 188, 88, 0.4);
+}
+
+.btn-menu-movil:active,
+.btn-hamburguesa-mobile:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(38, 188, 88, 0.3);
+}
+
+.menu-movil-desplegable {
+    display: none;
+    position: absolute;
+    top: 80px;
+    right: 0;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px 0 0 8px;
+    padding: 0.5rem 0;
+    min-width: 200px;
+    z-index: 200;
+    animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-movil-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #26bc58;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s ease;
+}
+
+.menu-movil-item:hover {
+    background-color: #f8f9fa;
+}
+
+.menu-movil-item:active {
+    background-color: #e9ecef;
+}
+
 .logo {
     width: 250px;
     cursor: pointer;
@@ -47,8 +153,12 @@ ul li:hover {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    text-decoration: none;
-    color: inherit;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #26bc58;
+    cursor: pointer;
     padding: 0.5rem 1rem;
     border-radius: 6px;
     transition: all 0.3s ease;
@@ -56,4 +166,80 @@ ul li:hover {
 
 .enlace-config:hover {
     background-color: #f0f0f0;
+}
+
+.usuario-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem !important;
+    color: #555 !important;
+}
+
+.btn-cerrar-sesion {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #26bc58;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-cerrar-sesion:hover {
+    background-color: #f0f0f0;
+    color: #1f9a47;
+}
+
+.btn-login-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #26bc58;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-login-header:hover {
+    background-color: #f0f0f0;
+    color: #1f9a47;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-hamburguesa-mobile.btn-sidebar-toggle {
+        display: flex;
+    }
+    
+    .btn-menu-movil {
+        display: flex;
+    }
+    
+    .menu-desktop {
+        display: none;
+    }
+    
+    .menu-movil-desplegable {
+        display: block;
+    }
+    
+    .logo {
+        width: 180px;
+    }
+    
+    .header {
+        padding: 10px 4%;
+        position: relative;
+    }
 }

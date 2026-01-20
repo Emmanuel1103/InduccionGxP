@@ -58,12 +58,16 @@ def guardar_respuesta():
         respuestas_correctas = sum(1 for p in datos['respuestas'] if p.get('es_correcta', False))
         calificacion_calculada = round((respuestas_correctas / total_preguntas) * 100, 2)
         
+        # Crear ID único combinando cuestionario, timestamp y UUID
+        timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S%f')
+        uuid_corto = str(uuid.uuid4())[:8]
+        documento_id = f"{datos['cuestionario_id']}_{timestamp}_{uuid_corto}"
+        
         # Crear documento de respuesta
         respuesta = {
-            'id': str(uuid.uuid4()),
-            'sesion_id': sesion_id,  # Usar el identificador determinado
-            'nombre': datos.get('nombre', sesion_id),  # Agregar campo nombre específico
-            'cuestionario_id': datos['cuestionario_id'],
+            'id': documento_id,
+            'cuestionario_id': datos['cuestionario_id'],  # Partition key
+            'nombre': datos.get('nombre', ''),
             'cuestionario_titulo': datos.get('cuestionario_titulo', 'Sin título'),
             'respuestas': datos['respuestas'],  # Array con estructura detallada de cada pregunta
             'calificacion': datos.get('calificacion', calificacion_calculada),
@@ -88,13 +92,13 @@ def guardar_respuesta():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@bp_cuestionarios.route('/respuestas/<sesion_id>', methods=['GET'])
-def obtener_respuestas_sesion(sesion_id):
-    """Obtiene todas las respuestas de una sesión"""
+@bp_cuestionarios.route('/respuestas/<cuestionario_id>', methods=['GET'])
+def obtener_respuestas_cuestionario(cuestionario_id):
+    """Obtiene todas las respuestas de un cuestionario específico"""
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
-        consulta = "SELECT * FROM c WHERE c.sesion_id = @sesion_id ORDER BY c.fecha_completado DESC"
-        parametros = [{"name": "@sesion_id", "value": sesion_id}]
+        consulta = "SELECT * FROM c WHERE c.cuestionario_id = @cuestionario_id ORDER BY c.fecha_completado DESC"
+        parametros = [{"name": "@cuestionario_id", "value": cuestionario_id}]
         
         respuestas = servicio_cosmos.consultar_documentos(
             contenedor_respuestas, consulta, parametros
@@ -105,31 +109,16 @@ def obtener_respuestas_sesion(sesion_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@bp_cuestionarios.route('/respuestas/<sesion_id>/<cuestionario_id>', methods=['GET'])
-def obtener_respuesta_especifica(sesion_id, cuestionario_id):
-    """Obtiene la respuesta de un cuestionario específico en una sesión"""
+@bp_cuestionarios.route('/respuestas', methods=['GET'])
+def obtener_todas_respuestas():
+    """Obtiene todas las respuestas de todos los cuestionarios"""
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
-        consulta = """
-            SELECT * FROM c 
-            WHERE c.sesion_id = @sesion_id 
-            AND c.cuestionario_id = @cuestionario_id 
-            ORDER BY c.fecha_completado DESC
-        """
-        parametros = [
-            {"name": "@sesion_id", "value": sesion_id},
-            {"name": "@cuestionario_id", "value": cuestionario_id}
-        ]
+        consulta = "SELECT * FROM c ORDER BY c.fecha_completado DESC"
         
-        respuestas = servicio_cosmos.consultar_documentos(
-            contenedor_respuestas, consulta, parametros
-        )
+        respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta)
         
-        if respuestas:
-            # Retornar todas las respuestas (permite ver múltiples intentos)
-            return jsonify(respuestas), 200
-        else:
-            return jsonify({'error': 'No se encontraron respuestas'}), 404
+        return jsonify(respuestas), 200
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500

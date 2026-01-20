@@ -1,9 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaQuestionCircle, FaClipboardList, FaArrowLeft, FaBars, FaTimes } from 'react-icons/fa'
+import { FaQuestionCircle, FaClipboardList, FaArrowLeft, FaUserShield } from 'react-icons/fa'
 import './ConfigSidebar.css'
 
-const ConfigSidebar = ({ isOpen, onToggle, activeSection, onSectionChange }) => {
+const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSectionChange }) => {
   const navigate = useNavigate()
 
   const sections = [
@@ -18,6 +18,12 @@ const ConfigSidebar = ({ isOpen, onToggle, activeSection, onSectionChange }) => 
       label: 'Análisis de respuestas',
       icon: FaClipboardList,
       description: 'Ver respuestas de usuarios'
+    },
+    {
+      id: 'administracion',
+      label: 'Administración',
+      icon: FaUserShield,
+      description: 'Gestionar administradores'
     }
   ]
 
@@ -26,23 +32,16 @@ const ConfigSidebar = ({ isOpen, onToggle, activeSection, onSectionChange }) => 
   }
 
   return (
-    <div className={`config-sidebar ${isOpen ? 'open' : 'closed'}`}>
-      <div className="sidebar-header">
-        {isOpen ? (
-          <>
-            <div className="header-title">
-              <h3>Configuración</h3>
-            </div>
-            <button className="close-btn" onClick={onToggle}>
-              <FaTimes />
-            </button>
-          </>
-        ) : (
-          <button className="toggle-btn" onClick={onToggle}>
-            <FaBars />
-          </button>
-        )}
-      </div>
+    <div 
+      className={`config-sidebar ${isOpen ? 'open' : 'closed'}`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {/* <div className="sidebar-header">
+        <div className="header-title">
+          <h3>Configuración</h3>
+        </div>
+      </div> */}
 
       <nav className="sidebar-nav">
         {sections.map(section => {

@@ -189,9 +189,6 @@ const VistaSesiones = ({ sesiones, formatearFecha, onVaciar, cargando }) => {
               <th>ID Sesión</th>
               <th>Fecha Inicio</th>
               <th>Última Actividad</th>
-              <th>% Completado</th>
-              <th>Módulos</th>
-              <th>Videos</th>
             </tr>
           </thead>
           <tbody>
@@ -200,9 +197,6 @@ const VistaSesiones = ({ sesiones, formatearFecha, onVaciar, cargando }) => {
                 <td><code>{sesion.sesion_id?.substring(0, 8)}...</code></td>
                 <td>{formatearFecha(sesion.fecha_inicio)}</td>
                 <td>{formatearFecha(sesion.ultima_actividad)}</td>
-                <td><span className='badge'>{sesion.porcentaje_completado}%</span></td>
-                <td>{sesion.modulos_completados?.length || 0}</td>
-                <td>{sesion.videos_vistos?.length || 0}</td>
               </tr>
             ))}
           </tbody>

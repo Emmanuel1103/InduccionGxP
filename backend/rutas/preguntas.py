@@ -73,9 +73,12 @@ def crear_pregunta():
         if datos['tipo'] == 'verdadero-falso' and 'respuesta_correcta' not in datos:
             return jsonify({'error': 'Las preguntas verdadero-falso requieren respuesta_correcta'}), 400
         
+        # Crear ID único combinando cuestionario_id y orden
+        documento_id = f"{datos['cuestionario_id']}_pregunta_{datos['orden']}"
+        
         # Crear pregunta
         pregunta = {
-            'id': str(uuid.uuid4()),
+            'id': documento_id,
             'cuestionario_id': datos['cuestionario_id'],
             'cuestionario_titulo': datos.get('cuestionario_titulo', ''),
             'orden': datos['orden'],

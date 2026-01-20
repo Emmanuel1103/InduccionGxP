@@ -16,10 +16,6 @@
   width: 250px;
 }
 
-.config-sidebar.closed:hover {
-  width: 250px;
-}
-
 .config-sidebar.closed {
   width: 60px;
 }
@@ -29,13 +25,9 @@
   padding: 1rem;
   border-bottom: 1px solid #e9ecef;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   min-height: 60px;
-}
-
-.sidebar-header.collapsed {
-  justify-content: center;
 }
 
 .header-title h3 {
@@ -43,67 +35,13 @@
   font-size: 1.1rem;
   font-weight: 600;
   color: #495057;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-.close-btn {
-  background: #dc3545;
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-}
-
-.close-btn:hover {
-  background: #c82333;
-  transform: scale(1.05);
-}
-
-.toggle-btn {
-  background: linear-gradient(135deg, #26bc58, #20a44b);
-  border: none;
-  color: white;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0.6rem;
-  border-radius: 8px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 6px rgba(38, 188, 88, 0.3);
-  transition: all 0.2s ease;
-}
-
-.toggle-btn:hover {
-  background: linear-gradient(135deg, #20a44b, #1e7e34);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(38, 188, 88, 0.4);
-}
-
-.toggle-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(38, 188, 88, 0.3);
-}
-
-.header-title h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.header-title p {
-  margin: 0;
-  font-size: 0.85rem;
-  opacity: 0.9;
+.config-sidebar.open .header-title h3 {
+  opacity: 1;
 }
 
 /* Navigation */
@@ -151,20 +89,13 @@
 .nav-label {
   font-weight: 500;
   font-size: 0.9rem;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.config-sidebar.closed .nav-label,
-.config-sidebar.closed:not(:hover) .nav-label {
   opacity: 0;
-  width: 0;
-  overflow: hidden;
+  transition: opacity 0.3s ease;
+  white-space: nowrap;
 }
 
-.config-sidebar.closed:hover .nav-label {
+.config-sidebar.open .nav-label {
   opacity: 1;
-  width: auto;
 }
 
 .nav-item.active .nav-desc {
@@ -230,11 +161,33 @@
 /* Responsive */
 @media (max-width: 768px) {
   .config-sidebar {
+    position: fixed;
+    left: 0;
+    top: 80px;
+    width: 280px;
+    height: calc(100vh - 80px);
     transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 150;
   }
   
   .config-sidebar.open {
     transform: translateX(0);
-    width: 280px;
+  }
+  
+  /* Desactivar hover en móvil */
+  .config-sidebar:not(.open) {
+    pointer-events: none;
+  }
+  
+  .config-sidebar.open {
+    pointer-events: auto;
+  }
+  
+  /* Mostrar siempre los labels en móvil cuando está abierto */
+  .config-sidebar.open .nav-label,
+  .config-sidebar.open .header-title h3 {
+    opacity: 1;
   }
 }

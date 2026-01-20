@@ -11,8 +11,18 @@ def crear_app(nombre_config='default'):
     config_obj = configuraciones.get(nombre_config, configuraciones['default'])
     app.config.from_object(config_obj)
     
-    # Configurar CORS
-    CORS(app, origins=app.config['CORS_ORIGINS'])
+    # Configurar sesiones
+    app.secret_key = app.config['SECRET_KEY']
+    app.config['SESSION_COOKIE_SECURE'] = False  # True en producción con HTTPS
+    app.config['SESSION_COOKIE_HTTPONLY'] = True
+    app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+    
+    # Configurar CORS con soporte para credenciales
+    CORS(app, 
+         origins=app.config['CORS_ORIGINS'],
+         supports_credentials=True,
+         allow_headers=['Content-Type', 'Authorization'],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])
     
     # Inicializar servicios de Azure con contexto de aplicación
     with app.app_context():
@@ -44,11 +54,13 @@ def crear_app(nombre_config='default'):
     from rutas.cuestionarios import bp_cuestionarios
     from rutas.preguntas import bp_preguntas
     from rutas.admin import bp_admin
+    from rutas.auth import bp_auth
     
     app.register_blueprint(bp_recursos, url_prefix='/api/recursos')
     app.register_blueprint(bp_cuestionarios, url_prefix='/api/cuestionarios')
     app.register_blueprint(bp_preguntas, url_prefix='/api/preguntas')
     app.register_blueprint(bp_admin, url_prefix='/api/admin')
+    app.register_blueprint(bp_auth, url_prefix='/api/auth')
     
     # Ruta de prueba
     @app.route('/api/salud', methods=['GET'])

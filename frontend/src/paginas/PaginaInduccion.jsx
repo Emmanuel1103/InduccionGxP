@@ -1,19 +1,31 @@
 import React, { useState, useEffect } from 'react'
 import { FaUser, FaTimes } from 'react-icons/fa'
+import { useSearchParams } from 'react-router-dom'
 import Header from '../componets/header/header'
 import VideoPlayer from '../componets/videoPlayer/VideoPlayer'
-import EstadoProgreso from '../componets/estadoProgreso/EstadoProgreso'
 import Cuestionario from '../componets/cuestionario/Cuestionario'
 import ListaRecursos from '../componets/listaRecursos/ListaRecursos'
 import InfoSesion from '../componets/infoSesion/InfoSesion'
 import './PaginaInduccion.css'
 
 export const PaginaInduccion = () => {
+  const [searchParams] = useSearchParams()
   const [mostrarModalNombre, setMostrarModalNombre] = useState(false)
   const [nombre, setNombre] = useState('')
   const [nombreTemporal, setNombreTemporal] = useState('')
+  const [mensajeError, setMensajeError] = useState('')
 
   useEffect(() => {
+    // Verificar si hay error de autenticación
+    const error = searchParams.get('error')
+    if (error === 'sin_permisos') {
+      setMensajeError('No tienes permisos de administrador')
+      setTimeout(() => setMensajeError(''), 5000)
+    } else if (error === 'callback_failed' || error === 'no_code') {
+      setMensajeError('Error al iniciar sesión')
+      setTimeout(() => setMensajeError(''), 5000)
+    }
+    
     // Verificar si ya hay un nombre guardado
     const nombreGuardado = sessionStorage.getItem('nombreUsuario')
     if (!nombreGuardado) {
@@ -21,7 +33,7 @@ export const PaginaInduccion = () => {
     } else {
       setNombre(nombreGuardado)
     }
-  }, [])
+  }, [searchParams])
 
   const guardarNombre = () => {
     if (nombreTemporal.trim()) {
@@ -35,9 +47,17 @@ export const PaginaInduccion = () => {
     setNombreTemporal(nombre)
     setMostrarModalNombre(true)
   }
+  
   return (
     <div className='pagina-induccion'>
       <Header />
+      
+      {mensajeError && (
+        <div className="mensaje-error-login">
+          {mensajeError}
+        </div>
+      )}
+      
       <div className='cuerpo'>
         <div className='contenido-principal'>
           <div className='columna-izquierda'>
@@ -52,7 +72,6 @@ export const PaginaInduccion = () => {
           </div>
           <div className='columna-derecha'>
             <Cuestionario cuestionarioId="cuestionario_gestion_procesos" nombre={nombre} />
-            <EstadoProgreso porcentaje={0} />
             <ListaRecursos />
           </div>
         </div>
@@ -83,7 +102,7 @@ const ModalNombre = ({ nombre, onChange, onGuardar, esEdicion }) => {
         <div className="modal-header">
           <h3>
             <FaUser />
-            {esEdicion ? 'Cambiar Nombre' : 'Bienvenido a la Inducción'}
+            {esEdicion ? 'Cambiar Nombre' : 'Bienvenido a la inducción'}
           </h3>
         </div>
 
