@@ -66,7 +66,8 @@ def guardar_respuesta():
         # Crear documento de respuesta
         respuesta = {
             'id': documento_id,
-            'cuestionario_id': datos['cuestionario_id'],  # Partition key
+            'cuestionario_id': datos['cuestionario_id'],
+            'sesion_id': datos.get('sesion_id', ''),  # Partition key - usar string vacío si no se proporciona
             'nombre': datos.get('nombre', ''),
             'cuestionario_titulo': datos.get('cuestionario_titulo', 'Sin título'),
             'respuestas': datos['respuestas'],  # Array con estructura detallada de cada pregunta

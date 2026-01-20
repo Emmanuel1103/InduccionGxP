@@ -165,9 +165,25 @@ export const adminAPI = {
 
   // Eliminar respuesta individual
   eliminarRespuesta: async (respuestaId) => {
-    const response = await fetch(`${API_BASE_URL}/admin/respuestas/${respuestaId}`, {
-      method: 'DELETE'
-    })
-    return manejarRespuesta(response)
+    try {
+      console.log('DEBUG: Eliminando respuesta:', respuestaId)
+      console.log('DEBUG: URL:', `${API_BASE_URL}/admin/respuestas/${respuestaId}`)
+      
+      const response = await fetch(`${API_BASE_URL}/admin/respuestas/${respuestaId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      
+      console.log('DEBUG: Response status:', response.status)
+      console.log('DEBUG: Response headers:', response.headers)
+      
+      return manejarRespuesta(response)
+    } catch (error) {
+      console.error('ERROR: En eliminarRespuesta:', error)
+      throw error
+    }
   }
 }

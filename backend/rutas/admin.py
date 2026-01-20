@@ -1,6 +1,6 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from servicios.cosmos_db import servicio_cosmos
-from flask import current_app
+import traceback
 
 bp_admin = Blueprint('admin', __name__)
 
@@ -9,7 +9,6 @@ def listar_todas_sesiones():
     """Lista todas las sesiones creadas"""
     try:
         return jsonify({'error': 'Contenedor de sesiones eliminado'}), 410
-            
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -18,7 +17,7 @@ def listar_todas_respuestas():
     """Lista todas las respuestas guardadas"""
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
-        consulta = "SELECT * FROM c ORDER BY c.fecha_respuesta DESC"
+        consulta = "SELECT * FROM c ORDER BY c.fecha_completado DESC"
         
         respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta)
         
@@ -26,7 +25,6 @@ def listar_todas_respuestas():
             'total': len(respuestas),
             'respuestas': respuestas
         }), 200
-            
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -52,7 +50,6 @@ def listar_todas_preguntas():
             'cuestionarios': cuestionarios,
             'preguntas': preguntas
         }), 200
-            
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -95,16 +92,6 @@ def obtener_estadisticas_generales():
                 'total_activas': total_preguntas_activas
             }
         }), 200
-            
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@bp_admin.route('/sesiones/vaciar', methods=['DELETE'])
-def vaciar_sesiones():
-    """Elimina todas las sesiones del contenedor"""
-    try:
-        return jsonify({'error': 'Contenedor de sesiones eliminado'}), 410
-            
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
@@ -113,26 +100,43 @@ def vaciar_respuestas():
     """Elimina todas las respuestas del contenedor"""
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
-        consulta = "SELECT * FROM c"
         
+        # Obtener todas las respuestas (solo ID y partition key)
+        consulta = "SELECT c.id, c.sesion_id FROM c"
         respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta)
+        
         eliminados = 0
+        errores = 0
         
         for respuesta in respuestas:
-            try:
-                servicio_cosmos.eliminar_documento(
-                    contenedor_respuestas, 
-                    respuesta['id'], 
-                    respuesta['sesion_id']
-                )
+            # Manejar documentos que no tienen sesion_id (documentos antiguos)
+            if 'sesion_id' in respuesta:
+                partition_key = respuesta['sesion_id']
+            else:
+                partition_key = ""
+            
+            resultado = servicio_cosmos.eliminar_documento(
+                contenedor_respuestas, 
+                respuesta['id'], 
+                partition_key
+            )
+            
+            if resultado and resultado.get('success'):
                 eliminados += 1
-            except Exception as e:
-                print(f"Error eliminando respuesta {respuesta['id']}: {str(e)}")
+            else:
+                errores += 1
         
-        return jsonify({
-            'mensaje': f'{eliminados} respuestas eliminadas exitosamente',
-            'total_eliminados': eliminados
-        }), 200
+        if errores > 0:
+            return jsonify({
+                'mensaje': f'{eliminados} respuestas eliminadas. {errores} errores encontrados.',
+                'total_eliminados': eliminados,
+                'errores': errores
+            }), 206  # 206 = Partial Content
+        else:
+            return jsonify({
+                'mensaje': f'{eliminados} respuestas eliminadas exitosamente',
+                'total_eliminados': eliminados
+            }), 200
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -143,22 +147,23 @@ def eliminar_respuesta_individual(respuesta_id):
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
         
-        # Buscar la respuesta primero para obtener el partition key
-        consulta = "SELECT * FROM c WHERE c.id = @respuesta_id"
+        # Buscar la respuesta para obtener su partition key (sesion_id)
+        consulta = "SELECT c.id, c.sesion_id FROM c WHERE c.id = @respuesta_id"
         parametros = [{"name": "@respuesta_id", "value": respuesta_id}]
         
         respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta, parametros)
         
         if not respuestas:
-            return jsonify({'error': 'Respuesta no encontrada'}), 404
+            return jsonify({'error': 'La respuesta no existe'}), 404
         
         respuesta = respuestas[0]
-        # Usar cuestionario_id como partition key (estructura nueva)
-        partition_key = respuesta.get('cuestionario_id')
         
-        if not partition_key:
-            # Fallback para respuestas antiguas
-            partition_key = respuesta.get('sesion_id') or respuesta.get('nombre', respuesta_id)
+        # El contenedor está configurado con /sesion_id como partition key
+        # Si el documento no tiene sesion_id (documentos antiguos), usar string vacío
+        if 'sesion_id' in respuesta:
+            partition_key = respuesta['sesion_id']
+        else:
+            partition_key = ""
         
         # Eliminar el documento
         resultado = servicio_cosmos.eliminar_documento(
@@ -167,10 +172,11 @@ def eliminar_respuesta_individual(respuesta_id):
             partition_key
         )
         
-        if resultado:
+        if resultado and resultado.get('success'):
             return jsonify({'mensaje': 'Respuesta eliminada exitosamente'}), 200
         else:
-            return jsonify({'error': 'No se pudo eliminar la respuesta'}), 500
+            error_msg = resultado.get('message', 'Error al eliminar la respuesta') if resultado else 'Error desconocido'
+            return jsonify({'error': error_msg}), 500
             
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': f'Error interno del servidor: {str(e)}'}), 500

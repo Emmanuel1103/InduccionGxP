@@ -82,14 +82,23 @@ class ServicioCosmosDB:
             return None
     
     def eliminar_documento(self, nombre_contenedor, documento_id, partition_key):
-        """Elimina un documento"""
+        """Elimina un documento específico del contenedor"""
         try:
             contenedor = self.obtener_contenedor(nombre_contenedor)
+            if not contenedor:
+                return {'success': False, 'message': 'Contenedor no encontrado'}
+                
             contenedor.delete_item(item=documento_id, partition_key=partition_key)
-            return True
+            return {'success': True}
+            
+        except exceptions.CosmosResourceNotFoundError:
+            return {'success': False, 'message': 'Documento no encontrado'}
+            
         except exceptions.CosmosHttpResponseError as e:
-            print(f"Error al eliminar documento: {str(e)}")
-            return False
+            return {'success': False, 'message': f'Error HTTP {e.status_code}: {e.message}'}
+            
+        except Exception as e:
+            return {'success': False, 'message': str(e)}
     
     def consultar_documentos(self, nombre_contenedor, consulta, parametros=None):
         """Ejecuta una consulta SQL en un contenedor"""
