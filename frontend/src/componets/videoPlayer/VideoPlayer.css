@@ -8,7 +8,8 @@
 
 .reproductor-wrapper {
   position: relative;
-  padding-top: 56.25%; /* Aspect ratio 16:9 */
+  padding-top: 56.25%;
+  /* Aspect ratio 16:9 */
   background: #000;
 }
 

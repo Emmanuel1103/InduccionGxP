@@ -7,6 +7,7 @@ import GestionPreguntas from '../componets/gestionPreguntas/GestionPreguntas'
 import VisorRespuestas from '../componets/configuracion/VisorRespuestas'
 import Administracion from '../componets/administracion/Administracion'
 import GestionDocumentos from '../componets/gestionDocumentos/GestionDocumentos'
+import ConfiguracionInduccion from '../componets/configuracionInduccion/ConfiguracionInduccion'
 import './PaginaConfiguracion.css'
 
 export const PaginaConfiguracion = () => {
@@ -21,6 +22,8 @@ export const PaginaConfiguracion = () => {
         return <VisorRespuestas />
       case 'documentos':
         return <GestionDocumentos />
+      case 'induccion':
+        return <ConfiguracionInduccion />
       case 'administracion':
         return <Administracion />
       default:

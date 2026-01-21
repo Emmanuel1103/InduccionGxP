@@ -240,3 +240,22 @@ export const documentosAPI = {
     return manejarRespuesta(response)
   }
 }
+
+// API de Configuración de Inducción
+export const configuracionAPI = {
+  // Obtener configuración de inducción
+  obtenerInduccion: async () => {
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion`)
+    return manejarRespuesta(response)
+  },
+
+  // Actualizar configuración de inducción
+  actualizarInduccion: async (datos) => {
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    })
+    return manejarRespuesta(response)
+  }
+}

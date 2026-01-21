@@ -56,6 +56,7 @@ def crear_app(nombre_config='default'):
     from rutas.admin import bp_admin
     from rutas.auth import bp_auth
     from rutas.documentos import bp_documentos
+    from rutas.configuracion_induccion import bp_configuracion
     
     app.register_blueprint(bp_recursos, url_prefix='/api/recursos')
     app.register_blueprint(bp_cuestionarios, url_prefix='/api/cuestionarios')
@@ -63,6 +64,7 @@ def crear_app(nombre_config='default'):
     app.register_blueprint(bp_admin, url_prefix='/api/admin')
     app.register_blueprint(bp_auth, url_prefix='/api/auth')
     app.register_blueprint(bp_documentos, url_prefix='/api/documentos')
+    app.register_blueprint(bp_configuracion, url_prefix='/api/configuracion')
     
     # Ruta de prueba
     @app.route('/api/salud', methods=['GET'])

@@ -8,7 +8,7 @@ export const VideoPlayer = ({ url }) => {
     <div className='contenedor-video'>
       <div className='reproductor-wrapper'>
         <ReactPlayer
-          src={VideoInduccion|| url}
+          src={VideoInduccion || url}
           controls={true}
           width='100%'
           height='100%'
@@ -17,7 +17,7 @@ export const VideoPlayer = ({ url }) => {
           muted={true}
           config={{
             youtube: {
-              playerVars: { 
+              playerVars: {
                 showinfo: 1,
                 modestbranding: 1
               }

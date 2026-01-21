@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaQuestionCircle, FaClipboardList, FaArrowLeft, FaUserShield, FaFolder } from 'react-icons/fa'
+import { FaQuestionCircle, FaClipboardList, FaArrowLeft, FaUserShield, FaFolder, FaVideo } from 'react-icons/fa'
 import './ConfigSidebar.css'
 
 const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSectionChange }) => {
@@ -8,16 +8,10 @@ const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSe
 
   const sections = [
     {
-      id: 'preguntas',
-      label: 'Gestión de preguntas',
-      icon: FaQuestionCircle,
-      description: 'Crear y editar preguntas'
-    },
-    {
-      id: 'respuestas',
-      label: 'Análisis de respuestas',
-      icon: FaClipboardList,
-      description: 'Ver respuestas de usuarios'
+      id: 'induccion',
+      label: 'Información de inducción',
+      icon: FaVideo,
+      description: 'Configurar título, video y descripción'
     },
     {
       id: 'documentos',
@@ -30,6 +24,18 @@ const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSe
       label: 'Administración',
       icon: FaUserShield,
       description: 'Gestionar administradores'
+    },
+    {
+      id: 'preguntas',
+      label: 'Gestión de preguntas',
+      icon: FaQuestionCircle,
+      description: 'Crear y editar preguntas'
+    },
+    {
+      id: 'respuestas',
+      label: 'Análisis de respuestas',
+      icon: FaClipboardList,
+      description: 'Ver respuestas de usuarios'
     }
   ]
 

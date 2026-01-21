@@ -1,0 +1,204 @@
+.configuracion-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.config-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.config-card:hover {
+    border-color: #26bc58;
+    box-shadow: 0 4px 12px rgba(38, 188, 88, 0.15);
+}
+
+.config-card-full {
+    grid-column: 1 / -1;
+}
+
+.config-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.config-card-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+.btn-editar-campo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: white;
+    color: #26bc58;
+    border: 2px solid #26bc58;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-editar-campo:hover {
+    background: #26bc58;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(38, 188, 88, 0.2);
+}
+
+.campo-valor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.campo-valor p {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #333;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.campo-valor small {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+.campo-edicion {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.campo-edicion input,
+.campo-edicion textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.campo-edicion input:focus,
+.campo-edicion textarea:focus {
+    outline: none;
+    border-color: #26bc58;
+    box-shadow: 0 0 0 3px rgba(38, 188, 88, 0.1);
+}
+
+.campo-edicion textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.botones-campo {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.btn-guardar-campo,
+.btn-cancelar-campo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1.25rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-guardar-campo {
+    background: #26bc58;
+    color: white;
+}
+
+.btn-guardar-campo:hover:not(:disabled) {
+    background: #20a049;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(38, 188, 88, 0.3);
+}
+
+.btn-guardar-campo:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-cancelar-campo {
+    background: #e9ecef;
+    color: #495057;
+}
+
+.btn-cancelar-campo:hover {
+    background: #dee2e6;
+}
+
+.nota-campo {
+    color: #6c757d;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin-top: -0.5rem;
+}
+
+.url-text {
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem !important;
+    color: #26bc58 !important;
+    word-break: break-all;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .configuracion-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .config-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .btn-editar-campo {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .botones-campo {
+        flex-direction: column;
+    }
+
+    .btn-guardar-campo,
+    .btn-cancelar-campo {
+        width: 100%;
+        justify-content: center;
+    }
+}
