@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { FaQuestionCircle, FaClipboardList, FaArrowLeft, FaUserShield } from 'react-icons/fa'
+import { FaQuestionCircle, FaClipboardList, FaArrowLeft, FaUserShield, FaFolder } from 'react-icons/fa'
 import './ConfigSidebar.css'
 
 const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSectionChange }) => {
@@ -20,6 +20,12 @@ const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSe
       description: 'Ver respuestas de usuarios'
     },
     {
+      id: 'documentos',
+      label: 'Documentos de interés',
+      icon: FaFolder,
+      description: 'Gestionar documentos'
+    },
+    {
       id: 'administracion',
       label: 'Administración',
       icon: FaUserShield,
@@ -32,7 +38,7 @@ const ConfigSidebar = ({ isOpen, onMouseEnter, onMouseLeave, activeSection, onSe
   }
 
   return (
-    <div 
+    <div
       className={`config-sidebar ${isOpen ? 'open' : 'closed'}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}

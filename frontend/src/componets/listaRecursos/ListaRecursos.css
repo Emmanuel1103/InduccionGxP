@@ -38,7 +38,18 @@
   padding: 0.8rem;
   background: #f8f9fa;
   border-radius: 8px;
-  transition: background 0.2s ease;
+  transition: all 0.2s ease;
+}
+
+.item-recurso-clickable {
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.item-recurso-clickable:hover {
+  background: #e3f2fd;
 }
 
 .item-recurso:hover {
@@ -70,10 +81,27 @@
   margin: 0 0 0.2rem 0;
 }
 
+.descripcion-recurso {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
 .tamano-recurso {
   font-size: 0.85rem;
   color: #888;
   margin: 0;
+}
+
+.icono-abrir {
+  font-size: 1rem;
+  color: #26bc58;
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.item-recurso-clickable:hover .icono-abrir {
+  opacity: 1;
 }
 
 .boton-descargar {

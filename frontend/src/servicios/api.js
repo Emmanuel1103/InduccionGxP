@@ -168,7 +168,7 @@ export const adminAPI = {
     try {
       console.log('DEBUG: Eliminando respuesta:', respuestaId)
       console.log('DEBUG: URL:', `${API_BASE_URL}/admin/respuestas/${respuestaId}`)
-      
+
       const response = await fetch(`${API_BASE_URL}/admin/respuestas/${respuestaId}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -176,14 +176,67 @@ export const adminAPI = {
           'Content-Type': 'application/json'
         }
       })
-      
+
       console.log('DEBUG: Response status:', response.status)
       console.log('DEBUG: Response headers:', response.headers)
-      
+
       return manejarRespuesta(response)
     } catch (error) {
       console.error('ERROR: En eliminarRespuesta:', error)
       throw error
     }
+  }
+}
+
+// Servicio de Documentos
+export const documentosAPI = {
+  // Listar documentos activos
+  listarDocumentos: async () => {
+    const response = await fetch(`${API_BASE_URL}/documentos`)
+    return manejarRespuesta(response)
+  },
+
+  // Listar todos los documentos (para administración)
+  listarTodosDocumentos: async () => {
+    const response = await fetch(`${API_BASE_URL}/documentos/todos`)
+    return manejarRespuesta(response)
+  },
+
+  // Crear nuevo documento
+  crearDocumento: async (datos) => {
+    const response = await fetch(`${API_BASE_URL}/documentos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    })
+    return manejarRespuesta(response)
+  },
+
+  // Actualizar documento
+  actualizarDocumento: async (id, datos) => {
+    const response = await fetch(`${API_BASE_URL}/documentos/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    })
+    return manejarRespuesta(response)
+  },
+
+  // Eliminar documento
+  eliminarDocumento: async (id) => {
+    const response = await fetch(`${API_BASE_URL}/documentos/${id}`, {
+      method: 'DELETE'
+    })
+    return manejarRespuesta(response)
+  },
+
+  // Reordenar documentos
+  reordenarDocumentos: async (orden) => {
+    const response = await fetch(`${API_BASE_URL}/documentos/reordenar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orden })
+    })
+    return manejarRespuesta(response)
   }
 }

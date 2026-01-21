@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { FaUserShield, FaPlus, FaTrash, FaEnvelope } from 'react-icons/fa'
+import '../../estilos/configuracion-comun.css'
 import './Administracion.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
@@ -19,7 +20,7 @@ const Administracion = () => {
       setCargando(true)
       const response = await fetch(`${API_URL}/auth/administradores`)
       const data = await response.json()
-      
+
       if (response.ok) {
         setAdministradores(data.administradores || [])
       } else {
@@ -35,7 +36,7 @@ const Administracion = () => {
 
   const agregarAdministrador = async (e) => {
     e.preventDefault()
-    
+
     if (!nuevoEmail) {
       mostrarMensaje('error', 'Ingresa un correo electrónico')
       return
@@ -51,7 +52,7 @@ const Administracion = () => {
       const response = await fetch(`${API_URL}/auth/administradores`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           email: nuevoEmail.toLowerCase().trim()
         })
       })
@@ -105,7 +106,6 @@ const Administracion = () => {
   return (
     <div className="administracion-container">
       <div className="administracion-header">
-        <FaUserShield className="header-icon" />
         <h2>Administración de usuarios</h2>
         <p>Gestiona los usuarios con permisos de administrador</p>
       </div>
@@ -142,7 +142,7 @@ const Administracion = () => {
 
       <div className="lista-administradores">
         <h3>Administradores actuales ({administradores.length})</h3>
-        
+
         {cargando && administradores.length === 0 ? (
           <div className="cargando">Cargando administradores...</div>
         ) : administradores.length === 0 ? (
@@ -158,7 +158,7 @@ const Administracion = () => {
                     <span className="admin-rol">{admin.rol}</span>
                   </div>
                 </div>
-                <button 
+                <button
                   className="btn-eliminar"
                   onClick={() => eliminarAdministrador(admin.email)}
                   disabled={cargando}

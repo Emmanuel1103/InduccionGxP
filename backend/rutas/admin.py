@@ -101,24 +101,19 @@ def vaciar_respuestas():
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
         
-        # Obtener todas las respuestas (solo ID y partition key)
-        consulta = "SELECT c.id, c.sesion_id FROM c"
+        # Obtener todas las respuestas (solo ID)
+        consulta = "SELECT c.id FROM c"
         respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta)
         
         eliminados = 0
         errores = 0
         
         for respuesta in respuestas:
-            # Manejar documentos que no tienen sesion_id (documentos antiguos)
-            if 'sesion_id' in respuesta:
-                partition_key = respuesta['sesion_id']
-            else:
-                partition_key = ""
-            
+            # El partition key es el mismo id del documento
             resultado = servicio_cosmos.eliminar_documento(
                 contenedor_respuestas, 
                 respuesta['id'], 
-                partition_key
+                respuesta['id']  # partition_key = id
             )
             
             if resultado and resultado.get('success'):
@@ -147,29 +142,12 @@ def eliminar_respuesta_individual(respuesta_id):
     try:
         contenedor_respuestas = current_app.config['COSMOS_CONTAINER_RESPUESTAS']
         
-        # Buscar la respuesta para obtener su partition key (sesion_id)
-        consulta = "SELECT c.id, c.sesion_id FROM c WHERE c.id = @respuesta_id"
-        parametros = [{"name": "@respuesta_id", "value": respuesta_id}]
-        
-        respuestas = servicio_cosmos.consultar_documentos(contenedor_respuestas, consulta, parametros)
-        
-        if not respuestas:
-            return jsonify({'error': 'La respuesta no existe'}), 404
-        
-        respuesta = respuestas[0]
-        
-        # El contenedor está configurado con /sesion_id como partition key
-        # Si el documento no tiene sesion_id (documentos antiguos), usar string vacío
-        if 'sesion_id' in respuesta:
-            partition_key = respuesta['sesion_id']
-        else:
-            partition_key = ""
-        
-        # Eliminar el documento
+        # El contenedor está configurado con /id como partition key
+        # Por lo tanto, el partition_key es el mismo respuesta_id
         resultado = servicio_cosmos.eliminar_documento(
             contenedor_respuestas, 
             respuesta_id, 
-            partition_key
+            respuesta_id  # partition_key = id
         )
         
         if resultado and resultado.get('success'):

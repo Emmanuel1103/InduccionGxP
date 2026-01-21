@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaDownload, FaArrowUp, FaArrowDown } from 'react-icons/fa'
 import { useGestionPreguntas } from '../../hooks/useGestionPreguntas'
+import '../../estilos/configuracion-comun.css'
 import './GestionPreguntas.css'
 
 export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_procesos' }) => {
@@ -70,14 +71,14 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
   const manejarCambioOpcion = (index, campo, valor) => {
     const nuevasOpciones = [...preguntaActual.opciones]
     nuevasOpciones[index] = { ...nuevasOpciones[index], [campo]: valor }
-    
+
     // Si se marca como correcta, desmarcar las demás
     if (campo === 'correcta' && valor === true) {
       nuevasOpciones.forEach((op, i) => {
         if (i !== index) op.correcta = false
       })
     }
-    
+
     setPreguntaActual(prev => ({ ...prev, opciones: nuevasOpciones }))
   }
 
@@ -127,7 +128,7 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
     nuevasPreguntasArray[nuevoIndex] = preguntaActual
 
     // Actualizar orden en la base de datos
-    const promesas = nuevasPreguntasArray.map((p, idx) => 
+    const promesas = nuevasPreguntasArray.map((p, idx) =>
       actualizarPregunta(p.id, { ...p, orden: idx + 1 })
     )
 
@@ -170,8 +171,8 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
                 cargando={cargando}
               />
             ) : (
-              <VistaPregunta 
-                pregunta={pregunta} 
+              <VistaPregunta
+                pregunta={pregunta}
                 index={index}
                 totalPreguntas={preguntas.length}
                 onEditar={() => iniciarEdicion(pregunta)}
@@ -218,17 +219,17 @@ const VistaPregunta = ({ pregunta, index, totalPreguntas, onEditar, onEliminar, 
         <div className='info-orden'>
           <span className='orden-pregunta'>Pregunta #{pregunta.orden}</span>
           <div className='controles-orden'>
-            <button 
-              className='boton-orden' 
-              onClick={onMoverArriba} 
+            <button
+              className='boton-orden'
+              onClick={onMoverArriba}
               disabled={index === 0}
               title='Mover arriba'
             >
               <FaArrowUp />
             </button>
-            <button 
-              className='boton-orden' 
-              onClick={onMoverAbajo} 
+            <button
+              className='boton-orden'
+              onClick={onMoverAbajo}
               disabled={index === totalPreguntas - 1}
               title='Mover abajo'
             >

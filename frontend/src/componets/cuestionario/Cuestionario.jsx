@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { FaCheckCircle, FaTimesCircle, FaQuestionCircle, FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import { useCuestionario } from '../../hooks/useCuestionario'
 import { preguntasAPI } from '../../servicios/api'
@@ -13,6 +13,7 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
   const [cargandoPreguntas, setCargandoPreguntas] = useState(true)
   const [errorPreguntas, setErrorPreguntas] = useState(null)
   const [tiempoInicio] = useState(Date.now())
+  const respuestasEnviadas = useRef(false) // Bandera para evitar envíos duplicados
 
   const { enviarRespuestas, enviando, resultado, error } = useCuestionario(
     nombre || 'Sin nombre',
@@ -26,7 +27,7 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
       try {
         setCargandoPreguntas(true)
         const preguntasDB = await preguntasAPI.obtenerPreguntas(cuestionarioId)
-        
+
         // Convertir formato de DB a formato del componente
         const preguntasFormateadas = preguntasDB.map(p => ({
           id: p.id,
@@ -36,7 +37,7 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
           respuestaCorrecta: p.respuesta_correcta,
           explicacion: p.explicacion || ''
         }))
-        
+
         setPreguntas(preguntasFormateadas)
         setCargandoPreguntas(false)
       } catch (err) {
@@ -106,17 +107,26 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
   }
 
   const manejarEnvioFinal = async () => {
+    // Evitar envíos duplicados (causados por React StrictMode en desarrollo)
+    if (respuestasEnviadas.current) {
+      console.log('Las respuestas ya fueron enviadas, evitando duplicado')
+      return
+    }
+
+    respuestasEnviadas.current = true
     const tiempoEmpleado = Math.floor((Date.now() - tiempoInicio) / 1000)
-    
+
     try {
       const respuesta = await enviarRespuestas(preguntas, respuestas, tiempoEmpleado)
-      
+
       if (respuesta) {
         console.log('Respuestas guardadas:', respuesta)
         setMostrarResultados(true)
       }
     } catch (err) {
       console.error('Error al enviar respuestas:', err)
+      // Resetear la bandera en caso de error para permitir reintento
+      respuestasEnviadas.current = false
       // Aún así mostrar resultados localmente
       setMostrarResultados(true)
     }
@@ -143,6 +153,7 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
     setPreguntaActual(0)
     setMostrarResultados(false)
     setRespuestaVerificada({})
+    respuestasEnviadas.current = false // Resetear bandera para permitir nuevo envío
   }
 
   // Mostrar loading mientras cargan las preguntas
@@ -215,7 +226,7 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
           <div className='barra-resultado'>
             <div
               className='barra-resultado-relleno'
-              style={{ 
+              style={{
                 width: `${porcentaje}%`,
                 backgroundColor: aprobado ? '#26bc58' : '#e74c3c'
               }}

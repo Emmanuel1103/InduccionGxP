@@ -6,6 +6,7 @@ import MainContent from '../componets/content/MainContent'
 import GestionPreguntas from '../componets/gestionPreguntas/GestionPreguntas'
 import VisorRespuestas from '../componets/configuracion/VisorRespuestas'
 import Administracion from '../componets/administracion/Administracion'
+import GestionDocumentos from '../componets/gestionDocumentos/GestionDocumentos'
 import './PaginaConfiguracion.css'
 
 export const PaginaConfiguracion = () => {
@@ -18,6 +19,8 @@ export const PaginaConfiguracion = () => {
         return <GestionPreguntas cuestionarioId='cuestionario_gestion_procesos' />
       case 'respuestas':
         return <VisorRespuestas />
+      case 'documentos':
+        return <GestionDocumentos />
       case 'administracion':
         return <Administracion />
       default:
@@ -32,19 +35,19 @@ export const PaginaConfiguracion = () => {
 
   return (
     <div className='pagina-configuracion'>
-      <Header 
+      <Header
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
         esConfiguracion={true}
       />
-      
-      <ConfigSidebar 
+
+      <ConfigSidebar
         isOpen={sidebarOpen}
         onMouseEnter={() => setSidebarOpen(true)}
         onMouseLeave={() => setSidebarOpen(false)}
         activeSection={seccionActiva}
         onSectionChange={setSeccionActiva}
       />
-      
+
       <MainContent sidebarOpen={sidebarOpen}>
         {renderContenido()}
       </MainContent>

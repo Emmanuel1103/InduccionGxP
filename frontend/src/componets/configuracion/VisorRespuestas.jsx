@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { FaSearch, FaFilter, FaDownload, FaEye, FaClipboardList, FaUser, FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaDatabase, FaTimes, FaCode, FaTrash } from 'react-icons/fa'
 import { adminAPI } from '../../servicios/api'
+import '../../estilos/configuracion-comun.css'
 import './VisorRespuestas.css'
 
 const VisorRespuestas = () => {
@@ -40,11 +41,11 @@ const VisorRespuestas = () => {
 
   const respuestasFiltradas = respuestas.filter(respuesta => {
     const coincideFiltro = respuesta.cuestionario_titulo?.toLowerCase().includes(filtro.toLowerCase()) ||
-                          respuesta.nombre?.toLowerCase().includes(filtro.toLowerCase())
-    
+      respuesta.nombre?.toLowerCase().includes(filtro.toLowerCase())
+
     const coincideAprobado = filtroAprobado === 'todos' ||
-                            (filtroAprobado === 'aprobado' && respuesta.aprobado) ||
-                            (filtroAprobado === 'reprobado' && !respuesta.aprobado)
+      (filtroAprobado === 'aprobado' && respuesta.aprobado) ||
+      (filtroAprobado === 'reprobado' && !respuesta.aprobado)
 
     return coincideFiltro && coincideAprobado
   })
@@ -357,23 +358,23 @@ const ModalDatosContenedor = ({ respuestas, onCerrar }) => {
                   <ul>
                     {Object.keys(respuestas[0]).map(key => (
                       <li key={key}>
-                        <strong>{key}:</strong> {typeof respuestas[0][key]} 
-                        {key === 'respuestas' && Array.isArray(respuestas[0][key]) && 
+                        <strong>{key}:</strong> {typeof respuestas[0][key]}
+                        {key === 'respuestas' && Array.isArray(respuestas[0][key]) &&
                           ` (Array con ${respuestas[0][key]?.length || 0} elementos)`
                         }
                       </li>
                     ))}
                   </ul>
-                  
+
                   <h5>Ejemplo de respuesta completa:</h5>
                   <div className="ejemplo-respuesta">
-                    <button 
+                    <button
                       onClick={() => setRespuestaExpandida(respuestaExpandida ? null : 0)}
                       className="btn-expandir"
                     >
                       {respuestaExpandida !== null ? 'Contraer' : 'Expandir'} Primera Respuesta
                     </button>
-                    
+
                     {respuestaExpandida !== null && (
                       <pre className="respuesta-ejemplo">
                         {JSON.stringify(respuestas[0], null, 2)}

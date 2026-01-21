@@ -1,6 +1,7 @@
 .config-sidebar {
   position: fixed;
   left: 0;
+  top: 70px;
   width: 60px;
   height: calc(100vh - 70px);
   background: #fff;
@@ -8,8 +9,9 @@
   display: flex;
   flex-direction: column;
   transition: width 0.3s ease;
-  z-index: 100;
-  overflow: hidden;
+  z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .config-sidebar.open {
@@ -48,6 +50,8 @@
 .sidebar-nav {
   flex: 1;
   padding: 1rem 0;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .nav-item {
@@ -108,23 +112,30 @@
   padding: 1rem;
   border-top: 1px solid #e9ecef;
   background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
-  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .back-btn {
   width: 100%;
   border: none;
   background: transparent;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: 0;
   cursor: pointer;
   color: #6c757d;
   font-size: 0.9rem;
   transition: all 0.2s ease;
   white-space: nowrap;
   border-radius: 6px;
+}
+
+.config-sidebar.open .back-btn {
+  gap: 0.5rem;
+  justify-content: flex-start;
+  padding: 0.75rem 1rem;
 }
 
 .back-btn:hover {
@@ -135,20 +146,18 @@
 }
 
 .back-btn span {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.config-sidebar.closed .back-btn span,
-.config-sidebar.closed:not(:hover) .back-btn span {
+  transition: all 0.3s ease;
+  visibility: hidden;
+  max-width: 0;
   opacity: 0;
-  width: 0;
   overflow: hidden;
+  white-space: nowrap;
 }
 
-.config-sidebar.closed:hover .back-btn span {
+.config-sidebar.open .back-btn span {
+  visibility: visible;
   opacity: 1;
-  width: auto;
+  max-width: 200px;
 }
 
 .version-info {
@@ -171,20 +180,20 @@
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     z-index: 150;
   }
-  
+
   .config-sidebar.open {
     transform: translateX(0);
   }
-  
+
   /* Desactivar hover en móvil */
   .config-sidebar:not(.open) {
     pointer-events: none;
   }
-  
+
   .config-sidebar.open {
     pointer-events: auto;
   }
-  
+
   /* Mostrar siempre los labels en móvil cuando está abierto */
   .config-sidebar.open .nav-label,
   .config-sidebar.open .header-title h3 {

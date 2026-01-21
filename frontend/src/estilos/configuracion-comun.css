@@ -1,0 +1,380 @@
+/* 
+ * Sistema de Diseño Unificado para Pestañas de Configuración
+ * Colores: Verde (#26bc58) y Blanco
+ */
+
+/* ========== VARIABLES ========== */
+:root {
+    --color-principal: #26bc58;
+    --color-principal-hover: #20a049;
+    --color-principal-claro: #e8f5ee;
+    --color-blanco: #ffffff;
+    --color-gris-claro: #f8f9fa;
+    --color-gris-medio: #e9ecef;
+    --color-gris-oscuro: #6c757d;
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --sombra-media: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --radio-borde: 8px;
+    --radio-borde-grande: 12px;
+    --transicion: all 0.2s ease;
+}
+
+/* ========== ENCABEZADO COMÚN ========== */
+.encabezado-gestion,
+.administracion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--color-gris-medio);
+}
+
+.encabezado-gestion h2,
+.administracion-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: var(--color-texto);
+    font-weight: 600;
+}
+
+.administracion-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.administracion-header .header-icon {
+    font-size: 2rem;
+    color: var(--color-principal);
+    margin-bottom: 0.5rem;
+}
+
+.administracion-header p {
+    color: var(--color-texto-secundario);
+    margin: 0;
+}
+
+.botones-encabezado {
+    display: flex;
+    gap: 1rem;
+}
+
+/* ========== BOTONES PRINCIPALES ========== */
+.boton-crear,
+.btn-nuevo,
+.btn-agregar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-principal);
+    color: var(--color-blanco);
+    border: none;
+    border-radius: var(--radio-borde);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.boton-crear:hover,
+.btn-nuevo:hover,
+.btn-agregar:hover {
+    background: var(--color-principal-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-media);
+}
+
+.boton-crear:disabled,
+.btn-nuevo:disabled,
+.btn-agregar:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========== BOTONES DE ACCIÓN ========== */
+.boton-editar,
+.btn-accion.editar,
+.boton-guardar,
+.btn-guardar {
+    background: var(--color-principal);
+    color: var(--color-blanco);
+    border: 2px solid var(--color-principal);
+}
+
+.boton-editar:hover,
+.btn-accion.editar:hover,
+.boton-guardar:hover,
+.btn-guardar:hover {
+    background: var(--color-blanco);
+    color: var(--color-principal);
+}
+
+.boton-eliminar,
+.btn-accion.eliminar,
+.btn-eliminar,
+.btn-eliminar-respuesta {
+    background: var(--color-blanco);
+    color: #dc3545;
+    border: 2px solid #dc3545;
+}
+
+.boton-eliminar:hover,
+.btn-accion.eliminar:hover,
+.btn-eliminar:hover,
+.btn-eliminar-respuesta:hover {
+    background: #dc3545;
+    color: var(--color-blanco);
+}
+
+.boton-cancelar,
+.btn-cancelar {
+    background: var(--color-gris-medio);
+    color: var(--color-texto);
+    border: 2px solid var(--color-gris-medio);
+}
+
+.boton-cancelar:hover,
+.btn-cancelar:hover {
+    background: var(--color-gris-oscuro);
+    color: var(--color-blanco);
+}
+
+/* ========== TARJETAS/CARDS ========== */
+.tarjeta-pregunta,
+.respuesta-card,
+.admin-card,
+.documento-item,
+.formulario-documento,
+.lista-documentos,
+.agregar-admin-form,
+.lista-administradores {
+    background: var(--color-blanco);
+    border-radius: var(--radio-borde-grande);
+    padding: 1.5rem;
+    box-shadow: var(--sombra-suave);
+    margin-bottom: 1.5rem;
+    transition: var(--transicion);
+}
+
+.tarjeta-pregunta:hover,
+.respuesta-card:hover,
+.admin-card:hover,
+.documento-item:hover {
+    box-shadow: var(--sombra-media);
+    border-color: var(--color-principal);
+}
+
+/* ========== FORMULARIOS ========== */
+.campo,
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.campo label,
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-texto);
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.campo input[type="text"],
+.campo input[type="number"],
+.campo input[type="email"],
+.campo textarea,
+.campo select,
+.form-group input,
+.form-group textarea,
+.form-group select,
+.input-busqueda,
+.select-filtro {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--color-gris-medio);
+    border-radius: var(--radio-borde);
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transicion);
+}
+
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus,
+.form-group input:focus,
+.form-group textarea:focus,
+.input-busqueda:focus,
+.select-filtro:focus {
+    outline: none;
+    border-color: var(--color-principal);
+    box-shadow: 0 0 0 3px var(--color-principal-claro);
+}
+
+/* ========== BADGES/ETIQUETAS ========== */
+.badge,
+.estado-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.badge.activo,
+.estado-badge.aprobado {
+    background: var(--color-principal-claro);
+    color: var(--color-principal);
+}
+
+.badge.inactivo,
+.estado-badge.reprobado {
+    background: #fee;
+    color: #c33;
+}
+
+/* ========== MENSAJES ========== */
+.mensaje-error,
+.error-container {
+    background: #fee;
+    border: 2px solid #fcc;
+    border-radius: var(--radio-borde);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: #c33;
+}
+
+.mensaje.exito {
+    background: var(--color-principal-claro);
+    border: 2px solid var(--color-principal);
+    border-radius: var(--radio-borde);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    color: var(--color-principal);
+}
+
+.mensaje-cargando,
+.loading-container,
+.cargando {
+    text-align: center;
+    padding: 2rem;
+    color: var(--color-texto-secundario);
+}
+
+.mensaje-vacio,
+.empty-state,
+.sin-datos {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--color-texto-secundario);
+}
+
+/* ========== FILTROS Y BÚSQUEDA ========== */
+.respuestas-filtros,
+.filtro-busqueda,
+.filtro-aprobado {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: center;
+}
+
+.filtro-busqueda {
+    position: relative;
+    flex: 1;
+}
+
+.search-icon,
+.filter-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-gris-oscuro);
+}
+
+.input-busqueda {
+    padding-left: 2.5rem;
+}
+
+/* ========== BOTONES DE ORDEN ========== */
+.boton-orden,
+.btn-orden {
+    background: var(--color-gris-medio);
+    border: none;
+    border-radius: 4px;
+    padding: 0.4rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--color-texto);
+    transition: var(--transicion);
+}
+
+.boton-orden:hover:not(:disabled),
+.btn-orden:hover:not(:disabled) {
+    background: var(--color-principal);
+    color: var(--color-blanco);
+}
+
+.boton-orden:disabled,
+.btn-orden:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .encabezado-gestion {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .botones-encabezado {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .boton-crear,
+    .btn-nuevo,
+    .btn-agregar {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .respuestas-filtros {
+        flex-direction: column;
+    }
+
+    .filtro-busqueda,
+    .filtro-aprobado {
+        width: 100%;
+    }
+}
+
+/* ========== UTILIDADES ========== */
+.texto-principal {
+    color: var(--color-principal);
+}
+
+.fondo-principal {
+    background: var(--color-principal);
+}
+
+.fondo-claro {
+    background: var(--color-principal-claro);
+}
+
+.sombra-suave {
+    box-shadow: var(--sombra-suave);
+}
+
+.sombra-media {
+    box-shadow: var(--sombra-media);
+}

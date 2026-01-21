@@ -16,7 +16,7 @@
 }
 
 .administracion-header h2 {
-  color: #333;
+  color: #26bc58;
   margin-bottom: 0.5rem;
 }
 
@@ -216,6 +216,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
