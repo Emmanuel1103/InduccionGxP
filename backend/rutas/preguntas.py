@@ -89,8 +89,8 @@ def crear_pregunta():
         
         # Preguntas abiertas no requieren validaciones adicionales
         
-        # Crear ID único combinando cuestionario_id y orden
-        documento_id = f"{datos['cuestionario_id']}_pregunta_{datos['orden']}"
+        # Crear ID único usando UUID
+        documento_id = f"{datos['cuestionario_id']}_pregunta_{str(uuid.uuid4())}"
         
         # Crear pregunta
         pregunta = {
@@ -169,7 +169,7 @@ def actualizar_pregunta(pregunta_id):
 
 @bp_preguntas.route('/cuestionario/<pregunta_id>', methods=['DELETE'])
 def eliminar_pregunta(pregunta_id):
-    """Desactiva una pregunta (no la elimina físicamente)"""
+    """Elimina físicamente una pregunta del cuestionario"""
     try:
         datos = request.args
         cuestionario_id = datos.get('cuestionario_id')
@@ -178,21 +178,20 @@ def eliminar_pregunta(pregunta_id):
             return jsonify({'error': 'Se requiere parámetro cuestionario_id'}), 400
         
         contenedor_preguntas = current_app.config['COSMOS_CONTAINER_PREGUNTAS']
+        
+        # Verificar que la pregunta existe antes de eliminar
         pregunta = servicio_cosmos.leer_documento(contenedor_preguntas, pregunta_id, cuestionario_id)
         
         if not pregunta:
             return jsonify({'error': 'Pregunta no encontrada'}), 404
         
-        # Marcar como inactiva en lugar de eliminar
-        pregunta['activo'] = False
-        pregunta['fecha_modificacion'] = obtener_fecha_colombia()
+        # Eliminar físicamente de la base de datos
+        resultado = servicio_cosmos.eliminar_documento(contenedor_preguntas, pregunta_id, cuestionario_id)
         
-        resultado = servicio_cosmos.actualizar_documento(contenedor_preguntas, pregunta)
-        
-        if resultado:
-            return jsonify({'mensaje': 'Pregunta desactivada exitosamente'}), 200
+        if resultado.get('success'):
+            return jsonify({'mensaje': 'Pregunta eliminada exitosamente'}), 200
         else:
-            return jsonify({'error': 'Error al desactivar pregunta'}), 500
+            return jsonify({'error': resultado.get('message', 'Error al eliminar pregunta')}), 500
             
     except Exception as e:
         return jsonify({'error': str(e)}), 500
