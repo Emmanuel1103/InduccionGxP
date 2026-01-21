@@ -60,13 +60,13 @@ def subir_video():
             blob_name=video_filename,
             account_key=account_key,
             permission=BlobSasPermissions(read=True),
-            expiry=datetime.utcnow() + timedelta(days=3650)
+            expiry=datetime.utcnow() + timedelta(days=365)  # 1 año
         )
         
         video_url = f"{blob_client.url}?{sas_token}"
         
         print(f"\n✅ ¡Listo!")
-        print(f"\n📋 URL del video (válida por 10 años):")
+        print(f"\n📋 URL del video (válida por 1 año):")
         print(f"\n{video_url}\n")
         
         # Guardar URL
@@ -74,7 +74,8 @@ def subir_video():
             f.write(video_url)
         
         print(f"💾 URL guardada en: video_url.txt")
-        print(f"\n📝 Copia esta URL y pégala en la configuración de inducción")
+        print(f"\n⚠️  IMPORTANTE: NO commitees este archivo a Git (ya está en .gitignore)")
+        print(f"📝 Copia esta URL y pégala en la configuración de inducción")
         
     except Exception as e:
         print(f"\n❌ Error: {str(e)}")

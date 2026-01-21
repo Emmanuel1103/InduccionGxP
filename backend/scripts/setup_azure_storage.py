@@ -72,21 +72,21 @@ def crear_contenedor_y_subir_video():
         account_name = connection_parts.get('AccountName')
         account_key = connection_parts.get('AccountKey')
         
-        # Generar SAS token válido por 10 años
+        # Generar SAS token válido por 1 año
         sas_token = generate_blob_sas(
             account_name=account_name,
             container_name=container_name,
             blob_name=video_filename,
             account_key=account_key,
             permission=BlobSasPermissions(read=True),
-            expiry=datetime.utcnow() + timedelta(days=3650)  # 10 años
+            expiry=datetime.utcnow() + timedelta(days=365)  # 1 año
         )
         
         # Construir URL completa con SAS
         video_url = f"{blob_client.url}?{sas_token}"
         
         print(f"\n✅ ¡Video subido exitosamente!")
-        print(f"\n📋 URL del video (con SAS token, válida por 10 años):")
+        print(f"\n📋 URL del video (con SAS token, válida por 1 año):")
         print(f"   {video_url}")
         
         print(f"\n📝 Próximo paso:")
@@ -99,6 +99,7 @@ def crear_contenedor_y_subir_video():
         with open("video_url.txt", "w") as f:
             f.write(video_url)
         print(f"\n💾 URL guardada en: video_url.txt")
+        print(f"⚠️  IMPORTANTE: NO commitees este archivo a Git (ya está en .gitignore)")
         
     except Exception as e:
         print(f"\n❌ Error: {str(e)}")

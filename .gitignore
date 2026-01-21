@@ -26,3 +26,8 @@ dist-ssr
 *.mp4
 # Ignorar el archivo de entorno del backend (contiene secretos)
 /backend/.env
+
+# Azure - URLs y tokens temporales (NO commitear)
+backend/video_url.txt
+backend/*.sas
+*.sas
