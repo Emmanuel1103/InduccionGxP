@@ -11,7 +11,7 @@ import ConfiguracionInduccion from '../componets/configuracionInduccion/Configur
 import './PaginaConfiguracion.css'
 
 export const PaginaConfiguracion = () => {
-  const [seccionActiva, setSeccionActiva] = useState('preguntas')
+  const [seccionActiva, setSeccionActiva] = useState('induccion')
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const renderContenido = () => {
