@@ -62,16 +62,32 @@ def crear_pregunta():
                 return jsonify({'error': f'Campo requerido: {campo}'}), 400
         
         # Validar tipo de pregunta
-        if datos['tipo'] not in ['opcion-multiple', 'verdadero-falso']:
+        tipos_validos = [
+            'opcion-multiple',           # Selección única
+            'opcion-multiple-multi',     # Selección múltiple
+            'verdadero-falso',
+            'likert',                    # Escala de valoración
+            'abierta'                    # Texto libre (se cuenta como correcta)
+        ]
+        if datos['tipo'] not in tipos_validos:
             return jsonify({'error': 'Tipo de pregunta inválido'}), 400
         
-        # Validar que tenga opciones si es opción múltiple
-        if datos['tipo'] == 'opcion-multiple' and 'opciones' not in datos:
+        # Validar que tenga opciones si es opción múltiple (simple o multi)
+        if datos['tipo'] in ['opcion-multiple', 'opcion-multiple-multi'] and 'opciones' not in datos:
             return jsonify({'error': 'Las preguntas de opción múltiple requieren opciones'}), 400
         
         # Validar que tenga respuesta correcta si es verdadero-falso
         if datos['tipo'] == 'verdadero-falso' and 'respuesta_correcta' not in datos:
             return jsonify({'error': 'Las preguntas verdadero-falso requieren respuesta_correcta'}), 400
+        
+        # Validar configuración de Likert
+        if datos['tipo'] == 'likert':
+            if 'escala_min' not in datos or 'escala_max' not in datos:
+                return jsonify({'error': 'Las preguntas Likert requieren escala_min y escala_max'}), 400
+            if datos['escala_min'] >= datos['escala_max']:
+                return jsonify({'error': 'escala_min debe ser menor que escala_max'}), 400
+        
+        # Preguntas abiertas no requieren validaciones adicionales
         
         # Crear ID único combinando cuestionario_id y orden
         documento_id = f"{datos['cuestionario_id']}_pregunta_{datos['orden']}"
@@ -86,8 +102,19 @@ def crear_pregunta():
             'tipo': datos['tipo'],
             'opciones': datos.get('opciones', []),
             'respuesta_correcta': datos.get('respuesta_correcta'),
-            'explicacion': datos.get('explicacion', ''),
             'activo': datos.get('activo', True),
+
+            # Campos para Likert
+            'escala_min': datos.get('escala_min'),
+            'escala_max': datos.get('escala_max'),
+            'etiquetas': datos.get('etiquetas', {}),
+
+            # Campos para preguntas abiertas
+            'longitud_minima': datos.get('longitud_minima'),
+            
+            # Campos para selección múltiple
+            'min_selecciones': datos.get('min_selecciones'),
+            'max_selecciones': datos.get('max_selecciones'),
             'fecha_creacion': obtener_fecha_colombia(),
             'fecha_modificacion': obtener_fecha_colombia()
         }
@@ -121,7 +148,9 @@ def actualizar_pregunta(pregunta_id):
         
         # Actualizar campos permitidos
         campos_actualizables = ['orden', 'pregunta', 'tipo', 'opciones', 'respuesta_correcta', 
-                               'explicacion', 'activo', 'cuestionario_titulo']
+                               'activo', 'cuestionario_titulo', 'escala_min', 
+                               'escala_max', 'etiquetas', 'longitud_minima', 'min_selecciones', 
+                               'max_selecciones']
         for campo in campos_actualizables:
             if campo in datos:
                 pregunta[campo] = datos[campo]

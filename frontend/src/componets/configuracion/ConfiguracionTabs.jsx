@@ -1,11 +1,31 @@
-import React, { useState } from 'react'
-import { FaQuestionCircle, FaClipboardList, FaChartLine, FaCog } from 'react-icons/fa'
+import React, { useState, useEffect } from 'react'
+import { FaQuestionCircle, FaClipboardList, FaVideo, FaCog } from 'react-icons/fa'
 import GestionPreguntas from '../gestionPreguntas/GestionPreguntas'
 import VisorRespuestas from './VisorRespuestas'
+import SubidorVideo from './SubidorVideo'
+import { configuracionAPI } from '../../servicios/api'
 import './ConfiguracionTabs.css'
 
 const ConfiguracionTabs = () => {
   const [tabActiva, setTabActiva] = useState('preguntas')
+  const [configuracion, setConfiguracion] = useState(null)
+
+  useEffect(() => {
+    cargarConfiguracion()
+  }, [])
+
+  const cargarConfiguracion = async () => {
+    try {
+      const config = await configuracionAPI.obtenerInduccion()
+      setConfiguracion(config)
+    } catch (error) {
+      console.error('Error al cargar configuración:', error)
+    }
+  }
+
+  const handleVideoActualizado = (nuevaUrl) => {
+    setConfiguracion(prev => ({ ...prev, video_url: nuevaUrl }))
+  }
 
   const tabs = [
     {
@@ -18,6 +38,12 @@ const ConfiguracionTabs = () => {
       label: 'Ver Respuestas',
       icon: FaClipboardList,
       descripcion: 'Visualizar y analizar respuestas de usuarios'
+    },
+    {
+      id: 'induccion',
+      label: 'Configuración de Inducción',
+      icon: FaVideo,
+      descripcion: 'Gestionar video y configuración general'
     }
   ]
 
@@ -27,6 +53,16 @@ const ConfiguracionTabs = () => {
         return <GestionPreguntas cuestionarioId='cuestionario_gestion_procesos' />
       case 'respuestas':
         return <VisorRespuestas />
+      case 'induccion':
+        return (
+          <div>
+            <h3 style={{ marginBottom: '1.5rem', color: '#333' }}>Video de Inducción</h3>
+            <SubidorVideo
+              videoUrl={configuracion?.video_url}
+              onVideoActualizado={handleVideoActualizado}
+            />
+          </div>
+        )
       default:
         return <div>Pestaña no encontrada</div>
     }

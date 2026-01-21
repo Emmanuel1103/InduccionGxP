@@ -1,14 +1,14 @@
 import React from 'react'
 import ReactPlayer from 'react-player'
 import './VideoPlayer.css'
-import VideoInduccion from '../../assets/media/induccion_procesos.mp4'
+// import VideoInduccion from '../../assets/media/induccion_procesos.mp4'
 
 export const VideoPlayer = ({ url }) => {
   return (
     <div className='contenedor-video'>
       <div className='reproductor-wrapper'>
         <ReactPlayer
-          src={VideoInduccion || url}
+          src={url}
           controls={true}
           width='100%'
           height='100%'

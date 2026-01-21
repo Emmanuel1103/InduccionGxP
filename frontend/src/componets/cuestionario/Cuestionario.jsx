@@ -35,7 +35,12 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
           pregunta: p.pregunta,
           opciones: p.opciones || [],
           respuestaCorrecta: p.respuesta_correcta,
-          explicacion: p.explicacion || ''
+          // Campos para Likert
+          escala_min: p.escala_min,
+          escala_max: p.escala_max,
+          etiquetas: p.etiquetas || {},
+          // Campos para preguntas abiertas
+          longitud_minima: p.longitud_minima
         }))
 
         setPreguntas(preguntasFormateadas)
@@ -68,16 +73,85 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
     const respuesta = respuestas[pregunta.id]
     if (respuesta === undefined && respuesta !== false) return null
 
-    if (pregunta.tipo === 'opcion-multiple') {
-      const opcionSeleccionada = pregunta.opciones.find(op => op.id === respuesta)
-      return opcionSeleccionada?.correcta
-    } else if (pregunta.tipo === 'verdadero-falso') {
-      return respuesta === pregunta.respuestaCorrecta
+    switch (pregunta.tipo) {
+      case 'opcion-multiple':
+        const opcionSeleccionada = pregunta.opciones.find(op => op.id === respuesta)
+        return opcionSeleccionada?.correcta
+
+      case 'opcion-multiple-multi':
+        // Verificar que todas las seleccionadas sean correctas
+        // y que todas las correctas estén seleccionadas
+        const seleccionadas = Array.isArray(respuesta) ? respuesta : []
+        const correctas = pregunta.opciones.filter(op => op.correcta).map(op => op.id)
+        return seleccionadas.length === correctas.length &&
+          seleccionadas.every(id => correctas.includes(id))
+
+      case 'verdadero-falso':
+        return respuesta === pregunta.respuestaCorrecta
+
+      case 'likert':
+      case 'abierta':
+        return true // Siempre correcta para efectos de calificación
+
+      default:
+        return null
     }
-    return null
+  }
+
+  const puedeAvanzar = () => {
+    const respuesta = respuestas[pregunta.id]
+
+    // Verificar que haya una respuesta
+    if (respuesta === undefined || respuesta === null || respuesta === '') {
+      return false
+    }
+
+    // Validaciones específicas por tipo
+    switch (pregunta.tipo) {
+      case 'opcion-multiple-multi':
+        // Debe tener al menos una opción seleccionada
+        return Array.isArray(respuesta) && respuesta.length > 0
+
+      case 'abierta':
+        // Verificar longitud mínima si está configurada
+        if (pregunta.longitud_minima) {
+          return respuesta.length >= pregunta.longitud_minima
+        }
+        return respuesta.trim().length > 0
+
+      case 'likert':
+        // Debe tener un valor seleccionado
+        return respuesta !== undefined && respuesta !== null
+
+      default:
+        return respuesta !== undefined && respuesta !== null && respuesta !== ''
+    }
   }
 
   const verificarYAvanzar = () => {
+    // Para tipos sin validación de correcto/incorrecto, verificar restricciones y avanzar
+    if (['likert', 'abierta'].includes(pregunta.tipo)) {
+      if (!puedeAvanzar()) {
+        setRespuestaVerificada({
+          ...respuestaVerificada,
+          [pregunta.id]: 'incompleta'
+        })
+        return
+      }
+      irSiguiente()
+      return
+    }
+
+    // Para tipos con validación, primero verificar que esté completa
+    if (!puedeAvanzar()) {
+      setRespuestaVerificada({
+        ...respuestaVerificada,
+        [pregunta.id]: 'incompleta'
+      })
+      return
+    }
+
+    // Para tipos con validación
     const esCorrecta = esRespuestaCorrecta(pregunta)
 
     if (esCorrecta) {
@@ -238,9 +312,9 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
             </p>
           )}
 
-          <button className='boton-reiniciar' onClick={reiniciar} disabled={enviando}>
+          {/* <button className='boton-reiniciar' onClick={reiniciar} disabled={enviando}>
             {enviando ? 'Guardando...' : 'Intentar de Nuevo'}
-          </button>
+          </button> */}
         </div>
       </div>
     )
@@ -329,9 +403,112 @@ export const Cuestionario = ({ cuestionarioId = 'cuestionario_gestion_procesos',
           </div>
         )}
 
+        {/* Opción múltiple con selección múltiple */}
+        {pregunta.tipo === 'opcion-multiple-multi' && (
+          <div className='opciones'>
+            {pregunta.opciones.map(opcion => {
+              const seleccionadas = respuestas[pregunta.id] || []
+              const estaSeleccionada = seleccionadas.includes(opcion.id)
+
+              return (
+                <button
+                  key={opcion.id}
+                  className={`opcion-btn ${estaSeleccionada ? 'seleccionada' : ''} ${respuestaVerificada[pregunta.id] === 'incorrecta' && estaSeleccionada ? 'incorrecta' : ''
+                    } ${respuestaVerificada[pregunta.id] === true && estaSeleccionada ? 'correcta' : ''
+                    }`}
+                  onClick={() => {
+                    const nuevasSelecciones = estaSeleccionada
+                      ? seleccionadas.filter(id => id !== opcion.id)
+                      : [...seleccionadas, opcion.id]
+                    manejarRespuesta(pregunta.id, nuevasSelecciones)
+                  }}
+                  disabled={respuestaVerificada[pregunta.id] === true}
+                >
+                  {/* <input
+                    type="checkbox"
+                    checked={estaSeleccionada}
+                    readOnly
+                    style={{ marginRight: '0.5rem' }}
+                  /> */}
+                  <span className='opcion-letra'>{opcion.id.toUpperCase()}</span>
+                  <span className='opcion-texto'>{opcion.texto}</span>
+                  {respuestaVerificada[pregunta.id] === 'incorrecta' && estaSeleccionada && (
+                    <FaTimesCircle className='icono-resultado' />
+                  )}
+                  {respuestaVerificada[pregunta.id] === true && estaSeleccionada && (
+                    <FaCheckCircle className='icono-resultado' />
+                  )}
+                </button>
+              )
+            })}
+            <small style={{ display: 'block', marginTop: '0.5rem', color: '#666' }}>
+              Selecciona todas las opciones correctas
+            </small>
+          </div>
+        )}
+
+        {/* Escala Likert */}
+        {pregunta.tipo === 'likert' && (
+          <div className='escala-likert'>
+            <div className='opciones-likert'>
+              {Array.from(
+                { length: (pregunta.escala_max || 5) - (pregunta.escala_min || 1) + 1 },
+                (_, i) => (pregunta.escala_min || 1) + i
+              ).map(valor => (
+                <button
+                  key={valor}
+                  className={`opcion-likert ${respuestas[pregunta.id] === valor ? 'seleccionada' : ''}`}
+                  onClick={() => manejarRespuesta(pregunta.id, valor)}
+                >
+                  {valor}
+                </button>
+              ))}
+            </div>
+            <div className='etiquetas-likert-container'>
+              {pregunta.etiquetas?.[pregunta.escala_min || 1] && (
+                <div className='etiqueta-likert etiqueta-inicio'>
+                  {pregunta.etiquetas[pregunta.escala_min || 1]}
+                </div>
+              )}
+              {pregunta.etiquetas?.[pregunta.escala_max || 5] && (
+                <div className='etiqueta-likert etiqueta-fin'>
+                  {pregunta.etiquetas[pregunta.escala_max || 5]}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Pregunta abierta */}
+        {pregunta.tipo === 'abierta' && (
+          <div className='pregunta-abierta'>
+            <textarea
+              value={respuestas[pregunta.id] || ''}
+              onChange={(e) => manejarRespuesta(pregunta.id, e.target.value)}
+              placeholder='Escribe tu respuesta aquí...'
+              rows={6}
+              className='textarea-respuesta'
+            />
+            {pregunta.longitud_minima && (
+              <small className='contador-caracteres'>
+                {(respuestas[pregunta.id] || '').length} / {pregunta.longitud_minima} caracteres mínimos
+              </small>
+            )}
+          </div>
+        )}
+
         {respuestaVerificada[pregunta.id] === 'incorrecta' && (
           <div className='mensaje-error'>
             <FaTimesCircle /> Respuesta incorrecta. Intenta nuevamente.
+          </div>
+        )}
+
+        {respuestaVerificada[pregunta.id] === 'incompleta' && (
+          <div className='mensaje-error'>
+            <FaTimesCircle />
+            {pregunta.tipo === 'abierta' && pregunta.longitud_minima
+              ? `Por favor escribe al menos ${pregunta.longitud_minima} caracteres.`
+              : 'Por favor completa tu respuesta antes de continuar.'}
           </div>
         )}
       </div>

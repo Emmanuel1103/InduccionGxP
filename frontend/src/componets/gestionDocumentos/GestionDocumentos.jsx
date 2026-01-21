@@ -11,7 +11,7 @@ export const GestionDocumentos = () => {
     const [editando, setEditando] = useState(null)
     const [formulario, setFormulario] = useState({
         nombre: '',
-        link: '',
+        url: '',
         tipo: 'pdf',
         descripcion: '',
         activo: true
@@ -22,14 +22,13 @@ export const GestionDocumentos = () => {
         { value: 'docx', label: 'Word', icon: FaFileWord, color: '#2b579a' },
         { value: 'xlsx', label: 'Excel', icon: FaFileExcel, color: '#217346' },
         { value: 'pptx', label: 'PowerPoint', icon: FaFilePowerpoint, color: '#d24726' },
-        { value: 'link', label: 'Enlace externo', icon: FaExternalLinkAlt, color: '#3498db' },
         { value: 'otro', label: 'Otro', icon: FaPaperclip, color: '#7f8c8d' }
     ]
 
     const limpiarFormulario = () => {
         setFormulario({
             nombre: '',
-            link: '',
+            url: '',
             tipo: 'pdf',
             descripcion: '',
             activo: true
@@ -41,7 +40,7 @@ export const GestionDocumentos = () => {
     const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (!formulario.nombre.trim() || !formulario.link.trim()) {
+        if (!formulario.nombre.trim() || !formulario.url.trim()) {
             alert('Por favor completa los campos requeridos')
             return
         }
@@ -62,11 +61,11 @@ export const GestionDocumentos = () => {
 
     const handleEditar = (documento) => {
         setFormulario({
-            nombre: documento.nombre,
-            link: documento.link,
-            tipo: documento.tipo,
+            nombre: documento.nombre || '',
+            url: documento.url || documento.link || '',  // Compatibilidad con datos viejos
+            tipo: documento.tipo || 'pdf',
             descripcion: documento.descripcion || '',
-            activo: documento.activo
+            activo: documento.activo !== undefined ? documento.activo : true
         })
         setEditando(documento.id)
         setMostrarFormulario(true)
@@ -168,12 +167,12 @@ export const GestionDocumentos = () => {
                         </div>
 
                         <div className="form-group">
-                            <label htmlFor="link">Link / URL *</label>
+                            <label htmlFor="url">Link / URL *</label>
                             <input
                                 type="text"
-                                id="link"
-                                value={formulario.link}
-                                onChange={(e) => setFormulario({ ...formulario, link: e.target.value })}
+                                id="url"
+                                value={formulario.url}
+                                onChange={(e) => setFormulario({ ...formulario, url: e.target.value })}
                                 placeholder="Ej: https://ejemplo.com/documento.pdf"
                                 required
                             />
@@ -273,7 +272,7 @@ export const GestionDocumentos = () => {
                                     <div className="documento-detalles">
                                         <h4>{doc.nombre}</h4>
                                         {doc.descripcion && <p className="descripcion">{doc.descripcion}</p>}
-                                        <p className="link">{doc.link}</p>
+                                        <p className="link">{doc.url || doc.link}</p>
                                         <div className="documento-meta">
                                             <span className={`badge ${doc.activo ? 'activo' : 'inactivo'}`}>
                                                 {doc.activo ? 'Activo' : 'Inactivo'}

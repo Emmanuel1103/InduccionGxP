@@ -55,16 +55,18 @@ def crear_app(nombre_config='default'):
     from rutas.preguntas import bp_preguntas
     from rutas.admin import bp_admin
     from rutas.auth import bp_auth
-    from rutas.documentos import bp_documentos
+    # from rutas.documentos import bp_documentos  # DEPRECATED: Movido a configuracion
     from rutas.configuracion_induccion import bp_configuracion
+    from rutas.video_upload import bp_video
     
     app.register_blueprint(bp_recursos, url_prefix='/api/recursos')
     app.register_blueprint(bp_cuestionarios, url_prefix='/api/cuestionarios')
     app.register_blueprint(bp_preguntas, url_prefix='/api/preguntas')
     app.register_blueprint(bp_admin, url_prefix='/api/admin')
     app.register_blueprint(bp_auth, url_prefix='/api/auth')
-    app.register_blueprint(bp_documentos, url_prefix='/api/documentos')
+    # app.register_blueprint(bp_documentos, url_prefix='/api/documentos')  # DEPRECATED
     app.register_blueprint(bp_configuracion, url_prefix='/api/configuracion')
+    app.register_blueprint(bp_video, url_prefix='/api/video')
     
     # Ruta de prueba
     @app.route('/api/salud', methods=['GET'])

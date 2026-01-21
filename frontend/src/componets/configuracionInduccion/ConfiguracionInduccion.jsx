@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { FaVideo, FaSave, FaTimes, FaEdit } from 'react-icons/fa'
 import { useConfiguracionInduccion } from '../../hooks/useConfiguracionInduccion'
+import SubidorVideo from '../configuracion/SubidorVideo'
 import '../../estilos/configuracion-comun.css'
 import './ConfiguracionInduccion.css'
 
@@ -72,116 +73,95 @@ export const ConfiguracionInduccion = () => {
             )}
 
             <div className="configuracion-grid">
-                {/* Título */}
-                <div className="config-card">
+                {/* Sección de Video - Destacada */}
+                <div className="config-section-video config-card-full">
                     <div className="config-card-header">
-                        <h3>Título de la Inducción</h3>
-                        {editando !== 'titulo' && (
-                            <button className="btn-editar-campo" onClick={() => iniciarEdicion('titulo')}>
-                                <FaEdit /> Editar
-                            </button>
-                        )}
+                        <h3> Gestión de Video de Inducción</h3>
                     </div>
-
-                    {editando === 'titulo' ? (
-                        <div className="campo-edicion">
-                            <input
-                                type="text"
-                                value={valorTemporal}
-                                onChange={(e) => setValorTemporal(e.target.value)}
-                                placeholder="Título de la inducción"
-                                autoFocus
-                            />
-                            <div className="botones-campo">
-                                <button className="btn-guardar-campo" onClick={guardarCampo} disabled={cargando}>
-                                    <FaSave /> Guardar
-                                </button>
-                                <button className="btn-cancelar-campo" onClick={cancelarEdicion}>
-                                    <FaTimes /> Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="campo-valor">
-                            <p>{configuracion?.titulo || 'No configurado'}</p>
-                            <small>Este título aparece debajo del video en la página principal</small>
-                        </div>
-                    )}
+                    <SubidorVideo
+                        videoUrl={configuracion?.video_url}
+                        onVideoActualizado={async (nuevaUrl) => {
+                            // Actualizar configuración automáticamente
+                            await actualizarConfiguracion({ ...configuracion, video_url: nuevaUrl })
+                        }}
+                    />
                 </div>
 
-                {/* URL del Video */}
-                <div className="config-card">
-                    <div className="config-card-header">
-                        <h3>URL del Video</h3>
-                        {editando !== 'video_url' && (
-                            <button className="btn-editar-campo" onClick={() => iniciarEdicion('video_url')}>
-                                <FaEdit /> Editar
-                            </button>
+                {/* Sección de Información General */}
+                <div className="config-section-info config-card-full">
+                    {/* Título */}
+                    <div className="config-card">
+                        <div className="config-card-header">
+                            <h3>Título de la Inducción</h3>
+                            {editando !== 'titulo' && (
+                                <button className="btn-editar-campo" onClick={() => iniciarEdicion('titulo')}>
+                                    <FaEdit /> Editar
+                                </button>
+                            )}
+                        </div>
+
+                        {editando === 'titulo' ? (
+                            <div className="campo-edicion">
+                                <input
+                                    type="text"
+                                    value={valorTemporal}
+                                    onChange={(e) => setValorTemporal(e.target.value)}
+                                    placeholder="Título de la inducción"
+                                    autoFocus
+                                />
+                                <div className="botones-campo">
+                                    <button className="btn-guardar-campo" onClick={guardarCampo} disabled={cargando}>
+                                        <FaSave /> Guardar
+                                    </button>
+                                    <button className="btn-cancelar-campo" onClick={cancelarEdicion}>
+                                        <FaTimes /> Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="campo-valor">
+                                <p>{configuracion?.titulo || 'No configurado'}</p>
+                                <small>Este título aparece debajo del video en la página principal</small>
+                            </div>
                         )}
                     </div>
 
-                    {editando === 'video_url' ? (
-                        <div className="campo-edicion">
-                            <input
-                                type="text"
-                                value={valorTemporal}
-                                onChange={(e) => setValorTemporal(e.target.value)}
-                                placeholder="URL del video"
-                                autoFocus
-                            />
-                            <div className="botones-campo">
-                                <button className="btn-guardar-campo" onClick={guardarCampo} disabled={cargando}>
-                                    <FaSave /> Guardar
+                    {/* Descripción */}
+                    <div className="config-card">
+                        <div className="config-card-header">
+                            <h3>Descripción de la Sesión</h3>
+                            {editando !== 'descripcion' && (
+                                <button className="btn-editar-campo" onClick={() => iniciarEdicion('descripcion')}>
+                                    <FaEdit /> Editar
                                 </button>
-                                <button className="btn-cancelar-campo" onClick={cancelarEdicion}>
-                                    <FaTimes /> Cancelar
-                                </button>
-                            </div>
-                            <small className="nota-campo">Preparado para Azure Storage. Por ahora ingresa una URL válida.</small>
+                            )}
                         </div>
-                    ) : (
-                        <div className="campo-valor">
-                            <p className="url-text">{configuracion?.video_url || 'No configurado'}</p>
-                            <small>URL del video que se mostrará en la página de inducción</small>
-                        </div>
-                    )}
-                </div>
 
-                {/* Descripción */}
-                <div className="config-card config-card-full">
-                    <div className="config-card-header">
-                        <h3>Descripción de la Sesión</h3>
-                        {editando !== 'descripcion' && (
-                            <button className="btn-editar-campo" onClick={() => iniciarEdicion('descripcion')}>
-                                <FaEdit /> Editar
-                            </button>
+                        {editando === 'descripcion' ? (
+                            <div className="campo-edicion">
+                                <textarea
+                                    value={valorTemporal}
+                                    onChange={(e) => setValorTemporal(e.target.value)}
+                                    placeholder="Descripción de la sesión"
+                                    rows="5"
+                                    autoFocus
+                                />
+                                <div className="botones-campo">
+                                    <button className="btn-guardar-campo" onClick={guardarCampo} disabled={cargando}>
+                                        <FaSave /> Guardar
+                                    </button>
+                                    <button className="btn-cancelar-campo" onClick={cancelarEdicion}>
+                                        <FaTimes /> Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="campo-valor">
+                                <p>{configuracion?.descripcion || 'No configurado'}</p>
+                                <small>Esta descripción aparece en la sección "Sobre esta sesión"</small>
+                            </div>
                         )}
                     </div>
-
-                    {editando === 'descripcion' ? (
-                        <div className="campo-edicion">
-                            <textarea
-                                value={valorTemporal}
-                                onChange={(e) => setValorTemporal(e.target.value)}
-                                placeholder="Descripción de la sesión"
-                                rows="5"
-                                autoFocus
-                            />
-                            <div className="botones-campo">
-                                <button className="btn-guardar-campo" onClick={guardarCampo} disabled={cargando}>
-                                    <FaSave /> Guardar
-                                </button>
-                                <button className="btn-cancelar-campo" onClick={cancelarEdicion}>
-                                    <FaTimes /> Cancelar
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="campo-valor">
-                            <p>{configuracion?.descripcion || 'No configurado'}</p>
-                            <small>Esta descripción aparece en la sección "Sobre esta sesión"</small>
-                        </div>
-                    )}
                 </div>
             </div>
         </div>

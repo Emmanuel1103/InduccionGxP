@@ -30,8 +30,13 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
         { id: 'b', texto: '', correcta: false },
         { id: 'c', texto: '', correcta: false }
       ],
-      explicacion: '',
-      activo: true
+      activo: true,
+      // Campos para Likert (con valores por defecto)
+      escala_min: 1,
+      escala_max: 5,
+      etiquetas: {},
+      // Campos para preguntas abiertas
+      longitud_minima: null
     })
     setModoEdicion('crear')
   }
@@ -72,8 +77,9 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
     const nuevasOpciones = [...preguntaActual.opciones]
     nuevasOpciones[index] = { ...nuevasOpciones[index], [campo]: valor }
 
-    // Si se marca como correcta, desmarcar las demás
-    if (campo === 'correcta' && valor === true) {
+    // Si es selección única, desmarcar las demás al marcar una
+    // Si es selección múltiple, permitir múltiples correctas
+    if (campo === 'correcta' && valor === true && preguntaActual.tipo === 'opcion-multiple') {
       nuevasOpciones.forEach((op, i) => {
         if (i !== index) op.correcta = false
       })
@@ -205,7 +211,7 @@ export const GestionPreguntas = ({ cuestionarioId = 'cuestionario_gestion_proces
       {preguntas.length === 0 && !modoEdicion && !cargando && (
         <div className='mensaje-vacio'>
           <p>No hay preguntas configuradas</p>
-          <p>Haz clic en "Cargar Datos de Ejemplo" o "Nueva pregunta" para comenzar</p>
+          <p>Haz clic en "Nueva pregunta" para comenzar</p>
         </div>
       )}
     </div>
@@ -248,9 +254,15 @@ const VistaPregunta = ({ pregunta, index, totalPreguntas, onEditar, onEliminar, 
       </div>
       <p className='texto-pregunta'>{pregunta.pregunta}</p>
       <span className='tipo-pregunta'>
-        Tipo: {pregunta.tipo === 'opcion-multiple' ? 'Opción múltiple' : 'Verdadero/Falso'}
+        Tipo: {{
+          'opcion-multiple': 'Opción múltiple (única)',
+          'opcion-multiple-multi': 'Opción múltiple (múltiple)',
+          'verdadero-falso': 'Verdadero/Falso',
+          'likert': 'Escala Likert',
+          'abierta': 'Pregunta Abierta'
+        }[pregunta.tipo] || pregunta.tipo}
       </span>
-      {pregunta.tipo === 'opcion-multiple' && (
+      {(pregunta.tipo === 'opcion-multiple' || pregunta.tipo === 'opcion-multiple-multi') && (
         <div className='opciones-vista'>
           {pregunta.opciones.map((opcion) => (
             <div key={opcion.id} className={`opcion-vista ${opcion.correcta ? 'correcta' : ''}`}>
@@ -265,9 +277,14 @@ const VistaPregunta = ({ pregunta, index, totalPreguntas, onEditar, onEliminar, 
           Respuesta correcta: <strong>{pregunta.respuesta_correcta ? 'Verdadero' : 'Falso'}</strong>
         </div>
       )}
-      {pregunta.explicacion && (
-        <div className='explicacion'>
-          <small>Explicación: {pregunta.explicacion}</small>
+      {pregunta.tipo === 'likert' && (
+        <div className='respuesta-vf'>
+          Escala: {pregunta.escala_min} - {pregunta.escala_max}
+        </div>
+      )}
+      {pregunta.tipo === 'abierta' && (
+        <div className='respuesta-vf'>
+          Pregunta abierta (respuesta libre)
         </div>
       )}
     </>
@@ -297,10 +314,13 @@ const FormularioPregunta = ({
       </div>
 
       <div className='campo'>
-        <label>Tipo de Pregunta</label>
+        <label>Tipo de pregunta</label>
         <select value={pregunta.tipo} onChange={(e) => onChange('tipo', e.target.value)}>
-          <option value='opcion-multiple'>Opción múltiple</option>
+          <option value='opcion-multiple'>Opción múltiple (selección única)</option>
+          <option value='opcion-multiple-multi'>Opción múltiple (selección múltiple)</option>
           <option value='verdadero-falso'>Verdadero/Falso</option>
+          <option value='likert'>Escala Likert</option>
+          <option value='abierta'>Pregunta abierta</option>
         </select>
       </div>
 
@@ -314,7 +334,7 @@ const FormularioPregunta = ({
         />
       </div>
 
-      {pregunta.tipo === 'opcion-multiple' ? (
+      {(pregunta.tipo === 'opcion-multiple' || pregunta.tipo === 'opcion-multiple-multi') ? (
         <div className='campo'>
           <label>Opciones</label>
           <div className='opciones-formulario'>
@@ -351,9 +371,9 @@ const FormularioPregunta = ({
             <FaPlus /> Agregar Opción
           </button>
         </div>
-      ) : (
+      ) : pregunta.tipo === 'verdadero-falso' ? (
         <div className='campo'>
-          <label>Respuesta Correcta</label>
+          <label>Respuesta correcta</label>
           <select
             value={pregunta.respuesta_correcta ? 'true' : 'false'}
             onChange={(e) => onChange('respuesta_correcta', e.target.value === 'true')}
@@ -362,17 +382,57 @@ const FormularioPregunta = ({
             <option value='false'>Falso</option>
           </select>
         </div>
-      )}
-
-      <div className='campo'>
-        <label>Explicación (opcional)</label>
-        <textarea
-          value={pregunta.explicacion}
-          onChange={(e) => onChange('explicacion', e.target.value)}
-          rows='2'
-          placeholder='Explicación de por qué es correcta esta respuesta...'
-        />
-      </div>
+      ) : pregunta.tipo === 'likert' ? (
+        <>
+          <div className='campo'>
+            <label>Escala mínima</label>
+            <input
+              type='number'
+              value={pregunta.escala_min || 1}
+              onChange={(e) => onChange('escala_min', parseInt(e.target.value))}
+              min='1'
+            />
+          </div>
+          <div className='campo'>
+            <label>Escala máxima</label>
+            <input
+              type='number'
+              value={pregunta.escala_max || 5}
+              onChange={(e) => onChange('escala_max', parseInt(e.target.value))}
+              min='2'
+            />
+          </div>
+          <div className='campo'>
+            <label>Etiqueta mínima (opcional)</label>
+            <input
+              type='text'
+              value={pregunta.etiquetas?.[pregunta.escala_min] || ''}
+              onChange={(e) => onChange('etiquetas', { ...pregunta.etiquetas, [pregunta.escala_min]: e.target.value })}
+              placeholder='Ej: Muy en desacuerdo'
+            />
+          </div>
+          <div className='campo'>
+            <label>Etiqueta máxima (opcional)</label>
+            <input
+              type='text'
+              value={pregunta.etiquetas?.[pregunta.escala_max] || ''}
+              onChange={(e) => onChange('etiquetas', { ...pregunta.etiquetas, [pregunta.escala_max]: e.target.value })}
+              placeholder='Ej: Muy de acuerdo'
+            />
+          </div>
+        </>
+      ) : pregunta.tipo === 'abierta' ? (
+        <div className='campo'>
+          <label>Longitud mínima (opcional)</label>
+          <input
+            type='number'
+            value={pregunta.longitud_minima || ''}
+            onChange={(e) => onChange('longitud_minima', e.target.value ? parseInt(e.target.value) : null)}
+            placeholder='Número mínimo de caracteres'
+            min='0'
+          />
+        </div>
+      ) : null}
 
       <div className='botones-formulario'>
         <button className='boton-guardar' onClick={onGuardar} disabled={cargando}>

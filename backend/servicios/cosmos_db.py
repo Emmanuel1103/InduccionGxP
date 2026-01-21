@@ -36,7 +36,7 @@ class ServicioCosmosDB:
             (current_app.config['COSMOS_CONTAINER_RESPUESTAS'], '/id'),
             (current_app.config['COSMOS_CONTAINER_PREGUNTAS'], '/cuestionario_id'),
             (current_app.config['COSMOS_CONTAINER_ADMINISTRADORES'], '/email'),
-            (current_app.config['COSMOS_CONTAINER_DOCUMENTOS'], '/id'),
+            # (current_app.config['COSMOS_CONTAINER_DOCUMENTOS'], '/id'),  # DEPRECATED
             (current_app.config['COSMOS_CONTAINER_CONFIGURACION'], '/tipo')
         ]
         

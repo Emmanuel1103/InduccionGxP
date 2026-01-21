@@ -18,32 +18,80 @@ export const useCuestionario = (nombre, cuestionarioId, cuestionarioTitulo) => {
   const formatearRespuestas = (preguntas, respuestasUsuario) => {
     return preguntas.map((pregunta, index) => {
       const respuestaUsuario = respuestasUsuario[pregunta.id]
-      
+
       // Determinar respuesta correcta según el tipo
       let respuestaCorrecta
+      let respuestaUsuarioTexto
       let esCorrecta = false
-      
-      if (pregunta.tipo === 'opcion-multiple') {
-        const opcionCorrecta = pregunta.opciones.find(op => op.correcta)
-        respuestaCorrecta = opcionCorrecta?.texto || ''
-        
-        const opcionSeleccionada = pregunta.opciones.find(op => op.id === respuestaUsuario)
-        esCorrecta = opcionSeleccionada?.correcta || false
-      } else if (pregunta.tipo === 'verdadero-falso') {
-        respuestaCorrecta = pregunta.respuestaCorrecta ? 'Verdadero' : 'Falso'
-        esCorrecta = respuestaUsuario === pregunta.respuestaCorrecta
+      let tipoPregunta = 'multiple_choice'
+      let opciones = []
+
+      switch (pregunta.tipo) {
+        case 'opcion-multiple':
+          const opcionCorrecta = pregunta.opciones.find(op => op.correcta)
+          respuestaCorrecta = opcionCorrecta?.texto || ''
+          const opcionSeleccionada = pregunta.opciones.find(op => op.id === respuestaUsuario)
+          respuestaUsuarioTexto = opcionSeleccionada?.texto || ''
+          esCorrecta = opcionSeleccionada?.correcta || false
+          opciones = pregunta.opciones?.map(op => op.texto) || []
+          tipoPregunta = 'multiple_choice'
+          break
+
+        case 'opcion-multiple-multi':
+          const opcionesCorrectas = pregunta.opciones.filter(op => op.correcta)
+          respuestaCorrecta = opcionesCorrectas.map(op => op.texto).join(', ')
+          const seleccionadas = Array.isArray(respuestaUsuario) ? respuestaUsuario : []
+          const opcionesSeleccionadas = pregunta.opciones.filter(op => seleccionadas.includes(op.id))
+          respuestaUsuarioTexto = opcionesSeleccionadas.map(op => op.texto).join(', ')
+          // Verificar si todas las correctas están seleccionadas
+          const correctasIds = opcionesCorrectas.map(op => op.id)
+          esCorrecta = seleccionadas.length === correctasIds.length &&
+            seleccionadas.every(id => correctasIds.includes(id))
+          opciones = pregunta.opciones?.map(op => op.texto) || []
+          tipoPregunta = 'multiple_choice_multi'
+          break
+
+        case 'verdadero-falso':
+          respuestaCorrecta = pregunta.respuestaCorrecta ? 'Verdadero' : 'Falso'
+          respuestaUsuarioTexto = respuestaUsuario ? 'Verdadero' : 'Falso'
+          esCorrecta = respuestaUsuario === pregunta.respuestaCorrecta
+          opciones = ['Verdadero', 'Falso']
+          tipoPregunta = 'verdadero_falso'
+          break
+
+        case 'likert':
+          respuestaCorrecta = 'N/A' // No hay respuesta correcta
+          respuestaUsuarioTexto = String(respuestaUsuario || '')
+          esCorrecta = true // Siempre correcta
+          opciones = Array.from(
+            { length: pregunta.escala_max - pregunta.escala_min + 1 },
+            (_, i) => String(pregunta.escala_min + i)
+          )
+          tipoPregunta = 'likert'
+          break
+
+        case 'abierta':
+          respuestaCorrecta = 'N/A' // No hay respuesta correcta
+          respuestaUsuarioTexto = String(respuestaUsuario || '')
+          esCorrecta = true // Siempre correcta
+          opciones = []
+          tipoPregunta = 'texto_libre'
+          break
+
+        default:
+          respuestaCorrecta = ''
+          respuestaUsuarioTexto = ''
+          esCorrecta = false
       }
 
       return {
         orden: index + 1,
         titulo: `Pregunta ${index + 1}`,
         pregunta: pregunta.pregunta,
-        tipo_pregunta: pregunta.tipo === 'opcion-multiple' ? 'multiple_choice' : 'verdadero_falso',
-        opciones: pregunta.opciones?.map(op => op.texto) || ['Verdadero', 'Falso'],
+        tipo_pregunta: tipoPregunta,
+        opciones: opciones,
         respuesta_correcta: respuestaCorrecta,
-        respuesta_usuario: pregunta.tipo === 'opcion-multiple' 
-          ? pregunta.opciones.find(op => op.id === respuestaUsuario)?.texto || ''
-          : (respuestaUsuario ? 'Verdadero' : 'Falso'),
+        respuesta_usuario: respuestaUsuarioTexto,
         es_correcta: esCorrecta
       }
     })
@@ -66,7 +114,7 @@ export const useCuestionario = (nombre, cuestionarioId, cuestionarioTitulo) => {
 
     try {
       const respuestasFormateadas = formatearRespuestas(preguntas, respuestasUsuario)
-      
+
       const datos = {
         sesion_id: nombre, // Usar nombre como sesion_id para compatibilidad
         nombre: nombre,

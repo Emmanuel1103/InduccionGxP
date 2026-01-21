@@ -9,7 +9,7 @@ const VisorRespuestas = () => {
   const [cargando, setCargando] = useState(true)
   const [error, setError] = useState(null)
   const [filtro, setFiltro] = useState('')
-  const [filtroAprobado, setFiltroAprobado] = useState('todos')
+  /* Removed duplicate declaration */
   const [respuestaSeleccionada, setRespuestaSeleccionada] = useState(null)
   const [mostrarDatosRaw, setMostrarDatosRaw] = useState(false)
 
@@ -40,23 +40,17 @@ const VisorRespuestas = () => {
   }
 
   const respuestasFiltradas = respuestas.filter(respuesta => {
-    const coincideFiltro = respuesta.cuestionario_titulo?.toLowerCase().includes(filtro.toLowerCase()) ||
+    return respuesta.cuestionario_titulo?.toLowerCase().includes(filtro.toLowerCase()) ||
       respuesta.nombre?.toLowerCase().includes(filtro.toLowerCase())
-
-    const coincideAprobado = filtroAprobado === 'todos' ||
-      (filtroAprobado === 'aprobado' && respuesta.aprobado) ||
-      (filtroAprobado === 'reprobado' && !respuesta.aprobado)
-
-    return coincideFiltro && coincideAprobado
   })
 
   const exportarCSV = () => {
-    const headers = ['Nombre', 'Cuestionario', 'Calificación', 'Aprobado', 'Fecha']
+    const headers = ['Nombre', 'Cuestionario', 'Calificación', 'Estado', 'Fecha']
     const filas = respuestasFiltradas.map(r => [
       r.nombre || 'Sin nombre',
       r.cuestionario_titulo,
       r.calificacion,
-      r.aprobado ? 'Sí' : 'No',
+      'Terminado',
       formatearFecha(r.fecha_completado)
     ])
 
@@ -138,18 +132,7 @@ const VisorRespuestas = () => {
           />
         </div>
 
-        <div className="filtro-aprobado">
-          <FaFilter className="filter-icon" />
-          <select
-            value={filtroAprobado}
-            onChange={(e) => setFiltroAprobado(e.target.value)}
-            className="select-filtro"
-          >
-            <option value="todos">Todos</option>
-            <option value="aprobado">Aprobados</option>
-            <option value="reprobado">Reprobados</option>
-          </select>
-        </div>
+
       </div>
 
       {respuestasFiltradas.length === 0 ? (
@@ -166,9 +149,9 @@ const VisorRespuestas = () => {
                 <div className="cuestionario-titulo">
                   {respuesta.cuestionario_titulo}
                 </div>
-                <div className={`estado-badge ${respuesta.aprobado ? 'aprobado' : 'reprobado'}`}>
-                  {respuesta.aprobado ? <FaCheckCircle /> : <FaTimesCircle />}
-                  {respuesta.aprobado ? 'Aprobado' : 'Reprobado'}
+                <div className={`estado-badge aprobado`}>
+                  <FaCheckCircle />
+                  Terminado
                 </div>
               </div>
 
@@ -255,8 +238,8 @@ const DetalleRespuesta = ({ respuesta, onCerrar }) => {
               </div>
               <div className="info-item">
                 <label>Estado:</label>
-                <span className={respuesta.aprobado ? 'aprobado' : 'reprobado'}>
-                  {respuesta.aprobado ? 'Aprobado' : 'Reprobado'}
+                <span className='aprobado'>
+                  Terminado
                 </span>
               </div>
               <div className="info-item">
@@ -276,9 +259,6 @@ const DetalleRespuesta = ({ respuesta, onCerrar }) => {
                   <p>{resp.pregunta}</p>
                   <div className="respuesta-usuario">
                     <strong>Respuesta del usuario:</strong> {resp.respuesta_usuario}
-                  </div>
-                  <div className="respuesta-correcta">
-                    <strong>Respuesta correcta:</strong> {resp.respuesta_correcta}
                   </div>
                 </div>
                 <div className="respuesta-estado">

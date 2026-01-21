@@ -5,11 +5,11 @@ import './VisorContenedores.css'
 
 export const VisorContenedores = () => {
   const [vistaActiva, setVistaActiva] = useState('estadisticas')
-  const { 
-    respuestas, 
-    preguntas, 
-    estadisticas, 
-    cargando, 
+  const {
+    respuestas,
+    preguntas,
+    estadisticas,
+    cargando,
     error,
     cargarTodo,
   } = useAdminDatos()
@@ -70,20 +70,20 @@ export const VisorContenedores = () => {
 
       {/* Pestañas */}
       <div className='pestanas'>
-        <button 
+        <button
           className={`pestana ${vistaActiva === 'estadisticas' ? 'activa' : ''}`}
           onClick={() => setVistaActiva('estadisticas')}
         >
           <FaChartBar /> Estadísticas
         </button>
 
-        <button 
+        <button
           className={`pestana ${vistaActiva === 'respuestas' ? 'activa' : ''}`}
           onClick={() => setVistaActiva('respuestas')}
         >
           <FaClipboardList /> Respuestas ({respuestas.length})
         </button>
-        <button 
+        <button
           className={`pestana ${vistaActiva === 'preguntas' ? 'activa' : ''}`}
           onClick={() => setVistaActiva('preguntas')}
         >
@@ -98,8 +98,8 @@ export const VisorContenedores = () => {
         )}
 
         {vistaActiva === 'respuestas' && (
-          <VistaRespuestas 
-            respuestas={respuestas} 
+          <VistaRespuestas
+            respuestas={respuestas}
             formatearFecha={formatearFecha}
             onVaciar={manejarVaciarRespuestas}
             cargando={cargando}
@@ -151,12 +151,8 @@ const VistaEstadisticas = ({ estadisticas, cargando }) => {
           <h3>Resultados de Cuestionarios</h3>
           <div className='tarjetas-resultados'>
             <div className='tarjeta-resultado aprobado'>
-              <h4>{estadisticas.respuestas.aprobados}</h4>
-              <p>Aprobados (≥70%)</p>
-            </div>
-            <div className='tarjeta-resultado reprobado'>
-              <h4>{estadisticas.respuestas.reprobados}</h4>
-              <p>Reprobados (&lt;70%)</p>
+              <h4>{estadisticas.respuestas.total}</h4>
+              <p>Total Terminados</p>
             </div>
             <div className='tarjeta-resultado promedio'>
               <h4>{estadisticas.respuestas.promedio_calificacion}%</h4>
@@ -234,13 +230,13 @@ const VistaRespuestas = ({ respuestas, formatearFecha, onVaciar, cargando }) => 
               <p>{formatearFecha(respuesta.fecha_respuesta)}</p>
             </div>
             <div className='calificacion-respuesta'>
-              <div className={`badge-calificacion ${respuesta.calificacion >= 70 ? 'aprobado' : 'reprobado'}`}>
-                {respuesta.calificacion}%
+              <div className={`badge-calificacion aprobado`}>
+                Terminado ({respuesta.calificacion}%)
               </div>
               <p>{respuesta.respuestas_correctas}/{respuesta.total_preguntas} correctas</p>
             </div>
           </div>
-          
+
           {respuestaExpandida === respuesta.id && (
             <div className='detalles-respuesta'>
               <h5>Respuestas Detalladas:</h5>
@@ -285,7 +281,7 @@ const VistaPreguntas = ({ preguntas, formatearFecha }) => {
         <div key={cuestionarioId} className='grupo-cuestionario'>
           <h3>{preguntasList[0]?.cuestionario_titulo || cuestionarioId}</h3>
           <p className='info-cuestionario'>ID: <code>{cuestionarioId}</code> | {preguntasList.length} preguntas</p>
-          
+
           <div className='lista-preguntas-admin'>
             {preguntasList.sort((a, b) => a.orden - b.orden).map((pregunta) => (
               <div key={pregunta.id} className={`tarjeta-pregunta-admin ${!pregunta.activo ? 'inactiva' : ''}`}>

@@ -188,23 +188,23 @@ export const adminAPI = {
   }
 }
 
-// Servicio de Documentos
+// Servicio de Documentos (ahora parte de configuración)
 export const documentosAPI = {
   // Listar documentos activos
   listarDocumentos: async () => {
-    const response = await fetch(`${API_BASE_URL}/documentos`)
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion/documentos`)
     return manejarRespuesta(response)
   },
 
   // Listar todos los documentos (para administración)
   listarTodosDocumentos: async () => {
-    const response = await fetch(`${API_BASE_URL}/documentos/todos`)
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion/documentos/todos`)
     return manejarRespuesta(response)
   },
 
   // Crear nuevo documento
   crearDocumento: async (datos) => {
-    const response = await fetch(`${API_BASE_URL}/documentos`, {
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion/documentos`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(datos)
@@ -214,7 +214,7 @@ export const documentosAPI = {
 
   // Actualizar documento
   actualizarDocumento: async (id, datos) => {
-    const response = await fetch(`${API_BASE_URL}/documentos/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion/documentos/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(datos)
@@ -224,7 +224,7 @@ export const documentosAPI = {
 
   // Eliminar documento
   eliminarDocumento: async (id) => {
-    const response = await fetch(`${API_BASE_URL}/documentos/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion/documentos/${id}`, {
       method: 'DELETE'
     })
     return manejarRespuesta(response)
@@ -232,10 +232,10 @@ export const documentosAPI = {
 
   // Reordenar documentos
   reordenarDocumentos: async (orden) => {
-    const response = await fetch(`${API_BASE_URL}/documentos/reordenar`, {
+    const response = await fetch(`${API_BASE_URL}/configuracion/induccion/documentos/reordenar`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orden })
+      body: JSON.stringify({ documentos: orden })
     })
     return manejarRespuesta(response)
   }
@@ -256,6 +256,22 @@ export const configuracionAPI = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(datos)
     })
+    return manejarRespuesta(response)
+  }
+}
+
+// API de Video
+export const videoAPI = {
+  // Subir video de inducción
+  subirVideo: async (archivo) => {
+    const formData = new FormData()
+    formData.append('video', archivo)
+
+    const response = await fetch(`${API_BASE_URL}/video/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
     return manejarRespuesta(response)
   }
 }

@@ -27,8 +27,9 @@ export const ListaRecursos = () => {
   }
 
   const abrirDocumento = (documento) => {
-    // Abrir el link en una nueva pestaña
-    window.open(documento.link, '_blank', 'noopener,noreferrer')
+    // Abrir el link en una nueva pestaña (compatible con url o link)
+    const urlDocumento = documento.url || documento.link
+    window.open(urlDocumento, '_blank', 'noopener,noreferrer')
   }
 
   const obtenerIcono = (tipo) => {
@@ -41,8 +42,6 @@ export const ListaRecursos = () => {
         return <FaFileExcel color="#217346" />
       case 'pptx':
         return <FaFilePowerpoint color="#d24726" />
-      case 'link':
-        return <FaExternalLinkAlt color="#3498db" />
       default:
         return <FaPaperclip color="#7f8c8d" />
     }
